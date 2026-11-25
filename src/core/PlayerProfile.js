@@ -38,7 +38,11 @@ export class PlayerProfile {
   getProfile() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return normalizeProfile(null);
+      if (!raw) {
+        const profile = normalizeProfile(null);
+        this.#save(profile);
+        return profile;
+      }
       const parsed = JSON.parse(raw);
       if (!parsed || parsed.version !== PROFILE_VERSION) {
         const profile = normalizeProfile(null);
