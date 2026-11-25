@@ -15,5 +15,10 @@ new MainMenu(screenManager, game);
 new ParallaxBackground();
 
 const startupScreen = new StartupScreen(screenManager);
-screenManager.show("startup-screen", { announce: false });
-startupScreen.start();
+if (game.restoreSession()) {
+  screenManager.show("game-screen", { announce: false });
+  game.start();
+} else {
+  screenManager.show("startup-screen", { announce: false });
+  startupScreen.start();
+}

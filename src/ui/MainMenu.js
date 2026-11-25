@@ -27,7 +27,7 @@ export class MainMenu {
 
     const screenButton = event.target.closest("[data-screen]");
     if (screenButton) {
-      if (screenButton.dataset.screen === "main-menu") this.#game.stop();
+      if (screenButton.dataset.screen === "main-menu") this.#game.endSession();
       this.#screenManager.show(screenButton.dataset.screen);
       return;
     }
@@ -37,6 +37,7 @@ export class MainMenu {
     try {
       this.#game.start();
     } catch (error) {
+      this.#game.endSession();
       this.#screenManager.show("main-menu");
       console.error("Não foi possível iniciar a arena:", error);
     }
@@ -56,7 +57,7 @@ export class MainMenu {
 
     if (event.key === "Escape" && this.#screenManager.currentScreen !== "main-menu"
       && this.#screenManager.currentScreen !== "startup-screen") {
-      if (this.#screenManager.currentScreen === "game-screen") this.#game.stop();
+      if (this.#screenManager.currentScreen === "game-screen") this.#game.endSession();
       this.#screenManager.show("main-menu");
       return;
     }

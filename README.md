@@ -19,7 +19,7 @@ Em um universo sci-fi original, sobreviva a hordas temporizadas em uma experiên
 - HTML5 e CSS3
 - JavaScript ES Modules
 - Canvas 2D
-- LocalStorage (quando os sistemas de progresso forem implementados)
+- LocalStorage para persistência da sessão atual
 - GitHub Pages
 
 O projeto não utiliza bibliotecas, frameworks ou engines de jogos.
@@ -48,6 +48,7 @@ Acesse `http://localhost:8000`.
 │   │   ├── Camera.js
 │   │   ├── Game.js
 │   │   ├── GameLoop.js
+│   │   ├── GameSession.js
 │   │   ├── Input.js
 │   │   ├── Player.js
 │   │   ├── Renderer.js
@@ -84,4 +85,4 @@ Acesse `http://localhost:8000`.
 
 ## Status
 
-**Etapa 3 — Jogador:** movimentação top-down, arena de teste, câmera follow e limites do mapa.
+**Etapa 3 — Jogador:** movimentação top-down, arena de teste, câmera follow e limites do mapa. A sessão atual é restaurada automaticamente após recarregar a página.

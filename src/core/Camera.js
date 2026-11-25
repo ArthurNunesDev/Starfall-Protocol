@@ -9,6 +9,12 @@ export class Camera {
     this.#initialized = true;
   }
 
+  restore(x, y, width, height, world) {
+    this.x = this.#clamp(x, 0, world.width - width);
+    this.y = this.#clamp(y, 0, world.height - height);
+    this.#initialized = true;
+  }
+
   follow(target, width, height, world, deltaTime) {
     const targetX = this.#clamp(target.x - width / 2, 0, world.width - width);
     const targetY = this.#clamp(target.y - height / 2, 0, world.height - height);
