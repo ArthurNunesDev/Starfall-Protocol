@@ -3,6 +3,7 @@ import { ScreenManager } from "./ui/ScreenManager.js";
 import { StartupScreen } from "./ui/StartupScreen.js";
 import { MainMenu } from "./ui/MainMenu.js";
 import { ParallaxBackground } from "./ui/ParallaxBackground.js";
+import { PlayerProfile } from "./core/PlayerProfile.js";
 
 const canvas = document.querySelector("#game-canvas");
 if (!(canvas instanceof HTMLCanvasElement)) {
@@ -11,7 +12,8 @@ if (!(canvas instanceof HTMLCanvasElement)) {
 
 const screenManager = new ScreenManager();
 const game = new Game(canvas);
-new MainMenu(screenManager, game);
+const playerProfile = new PlayerProfile();
+new MainMenu(screenManager, game, playerProfile);
 new ParallaxBackground();
 
 const startupScreen = new StartupScreen(screenManager);

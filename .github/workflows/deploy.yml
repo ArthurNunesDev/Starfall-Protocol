@@ -34,6 +34,7 @@ jobs:
           test -f src/main.js
           test -f src/core/Game.js
           test -f src/core/GameSession.js
+          test -f src/core/PlayerProfile.js
           test -f src/core/Camera.js
           test -f src/core/Player.js
           test -f src/core/GameLoop.js

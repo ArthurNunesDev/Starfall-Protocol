@@ -20,6 +20,7 @@ export class Game {
   #elapsedTime = 0;
   #saveAccumulator = 0;
   #pendingCamera = null;
+  #characterId = "operator-01";
 
   constructor(canvas) {
     this.#renderer = new Renderer(canvas);
@@ -45,12 +46,14 @@ export class Game {
       Math.min(WORLD.height - PLAYER_RADIUS, savedSession.player.y),
     );
     this.#elapsedTime = savedSession.elapsedTime;
+    this.#characterId = savedSession.characterId || "operator-01";
     this.#pendingCamera = savedSession.camera;
     return true;
   }
 
-  start() {
+  start(characterId = this.#characterId) {
     if (this.#running) return;
+    if (typeof characterId === "string" && characterId.trim()) this.#characterId = characterId;
 
     this.#renderer.resize();
 
@@ -86,6 +89,7 @@ export class Game {
     this.#elapsedTime = 0;
     this.#saveAccumulator = 0;
     this.#pendingCamera = null;
+    this.#characterId = "operator-01";
     this.#player = new Player(WORLD.width / 2, WORLD.height / 2);
     this.#camera = new Camera();
   }
@@ -111,6 +115,7 @@ export class Game {
 
     this.#session.save({
       elapsedTime: this.#elapsedTime,
+      characterId: this.#characterId,
       player: this.#player,
       camera: this.#camera,
     });

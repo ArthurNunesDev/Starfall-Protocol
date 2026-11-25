@@ -36,6 +36,7 @@ export class GameSession {
         version: SESSION_VERSION,
         status: "running",
         elapsedTime: session.elapsedTime,
+        characterId: session.characterId || "operator-01",
         player: {
           x: session.player.x,
           y: session.player.y,

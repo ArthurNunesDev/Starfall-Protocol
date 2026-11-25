@@ -64,33 +64,80 @@
         </div>
         <div class="menu-divider"><span></span><i>SELECIONE UMA DIRETRIZ</i><span></span></div>
         <nav class="main-navigation" aria-label="Menu principal">
-          <button class="menu-button menu-button--primary" type="button" data-action="start-game">
-            <span class="menu-button__index">01</span><span>INICIAR PROTOCOLO</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
+          <button class="menu-button menu-button--primary" type="button" data-action="enter-game">
+            <span class="menu-button__index">01</span><span>ENTRAR</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
           </button>
-          <button class="menu-button" type="button" data-screen="operators-screen">
-            <span class="menu-button__index">02</span><span>OPERADORES</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
+          <button class="menu-button" type="button" data-screen="arsenal-screen" data-archive-button="weapons" disabled title="Desbloqueie uma arma durante uma partida.">
+            <span class="menu-button__index">02</span><span>ARSENAL <small class="menu-button__lock">BLOQUEADO</small></span><span class="menu-button__arrow" aria-hidden="true">⌑</span>
+          </button>
+          <button class="menu-button" type="button" data-screen="database-screen" data-archive-button="enemies" disabled title="Derrote um inimigo para liberar o banco de dados.">
+            <span class="menu-button__index">03</span><span>BANCO DE DADOS <small class="menu-button__lock">BLOQUEADO</small></span><span class="menu-button__arrow" aria-hidden="true">⌑</span>
           </button>
           <button class="menu-button" type="button" data-screen="settings-screen">
-            <span class="menu-button__index">03</span><span>CONFIGURAÇÕES</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
+            <span class="menu-button__index">04</span><span>CONFIGURAÇÕES</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
           </button>
           <button class="menu-button" type="button" data-screen="credits-screen">
-            <span class="menu-button__index">04</span><span>CRÉDITOS</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
+            <span class="menu-button__index">05</span><span>CRÉDITOS</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
           </button>
         </nav>
         <p class="menu-hint"><span class="key-hint">↑</span> <span class="key-hint">↓</span> NAVEGAR <span class="hint-separator">/</span> <span class="key-hint">ENTER</span> CONFIRMAR</p>
       </div>
     </section>
 
-    <section class="screen sub-screen" id="operators-screen" aria-labelledby="operators-title" hidden>
-      <div class="panel-content">
-        <p class="eyebrow">ARQUIVO CENTRAL // PESSOAL</p>
-        <h2 class="screen-title" id="operators-title">OPERADORES</h2>
-        <p class="screen-description">O registro de operadores ainda está sendo compilado.</p>
-        <div class="data-panel">
-          <span class="data-panel__icon" aria-hidden="true">⌁</span>
-          <div><strong>ARQUIVO INDISPONÍVEL</strong><p>Os perfis e critérios de desbloqueio serão disponibilizados quando o sistema de personagens estiver implementado.</p></div>
-          <span class="data-panel__code">OPR // 000</span>
+    <section class="screen sub-screen" id="character-select-screen" aria-labelledby="character-select-title" hidden>
+      <div class="panel-content character-panel">
+        <p class="eyebrow">CENTRAL DE OPERAÇÕES // SELEÇÃO</p>
+        <h2 class="screen-title" id="character-select-title">ESCOLHA SEU OPERADOR</h2>
+        <p class="screen-description">Selecione um operador disponível para iniciar a missão. Novos operadores serão liberados conforme seu progresso.</p>
+        <div class="character-selection">
+          <button class="character-card is-selected" type="button" data-character-id="operator-01" aria-pressed="true">
+            <span class="character-card__status">DESBLOQUEADO</span>
+            <span class="character-card__emblem" aria-hidden="true">✦</span>
+            <strong>OPERADOR 01</strong>
+            <small>OPERADOR INICIAL</small>
+            <span class="character-card__selection">SELECIONADO</span>
+          </button>
+          <div class="character-card character-card--locked" aria-disabled="true">
+            <span class="character-card__status">ACESSO RESTRITO</span>
+            <span class="character-card__emblem" aria-hidden="true">⌑</span>
+            <strong>OUTROS OPERADORES</strong>
+            <small>PERSONAGENS BLOQUEADOS</small>
+            <span class="character-card__selection">CUMPRA OBJETIVOS PARA DESBLOQUEAR</span>
+          </div>
         </div>
+        <div class="character-actions">
+          <button class="menu-button menu-button--primary character-start-button" type="button" data-action="start-selected-game">
+            <span>INICIAR COM OPERADOR SELECIONADO</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="back-button" type="button" data-screen="main-menu"><span aria-hidden="true">←</span> VOLTAR AO MENU</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen sub-screen" id="arsenal-screen" aria-labelledby="arsenal-title" hidden>
+      <div class="panel-content archive-panel">
+        <p class="eyebrow">ARQUIVO DE EQUIPAMENTOS // ARMAS</p>
+        <h2 class="screen-title" id="arsenal-title">ARSENAL</h2>
+        <p class="screen-description">Consulte as armas registradas durante suas operações. Este arquivo não permite equipar ou escolher armas.</p>
+        <div class="archive-lock-state" data-archive-lock="weapons">
+          <span class="data-panel__icon" aria-hidden="true">⌑</span>
+          <div><strong>ACESSO BLOQUEADO</strong><p>Encontre e desbloqueie sua primeira arma durante uma partida para acessar o arsenal.</p></div>
+        </div>
+        <div class="archive-list" data-archive-list="weapons" hidden></div>
+        <button class="back-button" type="button" data-screen="main-menu"><span aria-hidden="true">←</span> VOLTAR AO MENU</button>
+      </div>
+    </section>
+
+    <section class="screen sub-screen" id="database-screen" aria-labelledby="database-title" hidden>
+      <div class="panel-content archive-panel">
+        <p class="eyebrow">ARQUIVO DE AMEAÇAS // REGISTROS</p>
+        <h2 class="screen-title" id="database-title">BANCO DE DADOS</h2>
+        <p class="screen-description">Consulte os inimigos que você já derrotou. Novas entradas são registradas automaticamente após a primeira eliminação.</p>
+        <div class="archive-lock-state" data-archive-lock="enemies">
+          <span class="data-panel__icon" aria-hidden="true">⌑</span>
+          <div><strong>ACESSO BLOQUEADO</strong><p>Derrote seu primeiro inimigo durante uma partida para liberar o banco de dados.</p></div>
+        </div>
+        <div class="archive-list" data-archive-list="enemies" hidden></div>
         <button class="back-button" type="button" data-screen="main-menu"><span aria-hidden="true">←</span> VOLTAR AO MENU</button>
       </div>
     </section>

@@ -85,4 +85,14 @@ Acesse `http://localhost:8000`.
 
 ## Status
 
-**Etapa 3 — Jogador:** movimentação top-down, arena de teste, câmera follow e limites do mapa. A sessão atual é restaurada automaticamente após recarregar a página.
+## Fluxo atual
+
+- **Entrar:** abre a seleção de operadores antes da partida.
+- **Personagens:** o operador inicial começa desbloqueado; a seleção é salva no perfil.
+- **Arsenal:** fica bloqueado até que uma arma seja registrada como desbloqueada.
+- **Banco de dados:** fica bloqueado até que o jogador derrote e registre seu primeiro inimigo.
+- **Persistência:** perfil de progressão e sessão ativa usam registros separados no LocalStorage.
+
+## Status
+
+**Etapa 3 — Jogador:** movimentação top-down, arena de teste, câmera follow e limites do mapa. A sessão ativa é restaurada após recarregar a página; o perfil mantém a seleção e os desbloqueios.
