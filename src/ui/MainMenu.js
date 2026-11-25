@@ -88,6 +88,7 @@ export class MainMenu {
     if (event.key === "Escape" && this.#screenManager.currentScreen !== "main-menu"
       && this.#screenManager.currentScreen !== "startup-screen") {
       if (this.#screenManager.currentScreen === "game-screen") this.#game.endSession();
+      this.#refreshArchives();
       this.#screenManager.show("main-menu");
       return;
     }
