@@ -51,6 +51,7 @@ Acesse `http://localhost:8000`.
 │   │   ├── GameSession.js
 │   │   ├── Input.js
 │   │   ├── Player.js
+│   │   ├── PlayerProfile.js
 │   │   ├── Renderer.js
 │   │   └── World.js
 │   └── ui/
@@ -82,8 +83,6 @@ Acesse `http://localhost:8000`.
 - Desenvolvimento incremental, com validação a cada etapa.
 - Commits em português, pequenos e objetivos.
 - Não adicionar funcionalidades fora do escopo definido.
-
-## Status
 
 ## Fluxo atual
 
