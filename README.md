@@ -19,7 +19,7 @@ Em um universo sci-fi original, sobreviva a hordas temporizadas em uma experiên
 - HTML5 e CSS3
 - JavaScript ES Modules
 - Canvas 2D
-- LocalStorage para persistência da sessão atual
+- LocalStorage para persistência do perfil e da sessão ativa
 - GitHub Pages
 
 O projeto não utiliza bibliotecas, frameworks ou engines de jogos.
