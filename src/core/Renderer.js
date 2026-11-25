@@ -16,7 +16,7 @@ export class Renderer {
 
     this.#canvas = canvas;
     this.#context = context;
-    this.#stars = Array.from({ length: 150 }, (_, i) => ({
+    this.#stars = Array.from({ length: 600 }, (_, i) => ({
       x: (i * 197 + 83) % WORLD.width,
       y: (i * 311 + 47) % WORLD.height,
       radius: i % 9 === 0 ? 1.7 : 0.8,
