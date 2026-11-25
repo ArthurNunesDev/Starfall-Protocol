@@ -1,10 +1,13 @@
-import { Game } from "./core/Game.js";
+import { ScreenManager } from "./ui/ScreenManager.js";
+import { StartupScreen } from "./ui/StartupScreen.js";
+import { MainMenu } from "./ui/MainMenu.js";
+import { ParallaxBackground } from "./ui/ParallaxBackground.js";
 
-const canvas = document.querySelector("#game-canvas");
+const screenManager = new ScreenManager();
 
-if (!(canvas instanceof HTMLCanvasElement)) {
-  throw new Error('Elemento canvas "#game-canvas" não foi encontrado.');
-}
+new MainMenu(screenManager);
+new ParallaxBackground();
 
-const game = new Game(canvas);
-game.start();
+const startupScreen = new StartupScreen(screenManager);
+screenManager.show("startup-screen", { announce: false });
+startupScreen.start();

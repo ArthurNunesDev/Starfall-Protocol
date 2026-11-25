@@ -1,6 +1,6 @@
 # Starfall Protocol
 
-Jogo Survivors-like desenvolvido individualmente com **HTML, CSS e JavaScript puro**, utilizando Canvas 2D e módulos ES.
+Jogo Survivors-like sci-fi desenvolvido individualmente com **HTML, CSS e JavaScript puro**, utilizando Canvas 2D e módulos ES.
 
 ## Conceito
 
@@ -36,25 +36,32 @@ Acesse `http://localhost:8000`.
 ├── README.md
 ├── src/
 │   ├── main.js
-│   └── core/
-│       ├── Game.js
-│       ├── GameLoop.js
-│       ├── Input.js
-│       └── Renderer.js
+│   ├── core/
+│   │   ├── Game.js
+│   │   ├── GameLoop.js
+│   │   ├── Input.js
+│   │   └── Renderer.js
+│   └── ui/
+│       ├── MainMenu.js
+│       ├── ParallaxBackground.js
+│       ├── ScreenManager.js
+│       └── StartupScreen.js
 └── styles/
-    └── main.css
+    ├── main.css
+    └── menu.css
 ```
 
 ## Planejamento
 
 1. **Fundação:** estrutura, Canvas, loop principal e entrada do teclado.
-2. **Jogador:** movimentação, câmera follow, vida e colisões.
-3. **Combate:** armas automáticas, habilidades manuais e projéteis.
-4. **Hordas:** geração temporizada, inimigos e dificuldade progressiva.
-5. **Progressão:** experiência, níveis e aprimoramentos.
-6. **Conteúdo:** chefes, novos inimigos, armas e personagens desbloqueáveis.
-7. **Finalização:** menus, áudio, persistência, balanceamento e testes.
-8. **Publicação:** configuração e validação do GitHub Pages.
+2. **Interface:** inicialização, menu principal, telas secundárias e cenário parallax.
+3. **Jogador:** movimentação, câmera follow, vida e colisões.
+4. **Combate:** armas automáticas, habilidades manuais e projéteis.
+5. **Hordas:** geração temporizada, inimigos e dificuldade progressiva.
+6. **Progressão:** experiência, níveis e aprimoramentos.
+7. **Conteúdo:** chefes, novos inimigos, armas e personagens desbloqueáveis.
+8. **Finalização:** áudio, persistência, balanceamento e testes.
+9. **Publicação:** configuração e validação do GitHub Pages.
 
 ## Diretrizes
 
@@ -66,4 +73,4 @@ Acesse `http://localhost:8000`.
 
 ## Status
 
-**Etapa 1 — Fundação:** estrutura inicial e ciclo principal do jogo.
+**Etapa 2 — Interface:** splash screen, menu principal, telas informativas, configurações básicas e cenário parallax.

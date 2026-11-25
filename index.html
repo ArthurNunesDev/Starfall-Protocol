@@ -3,25 +3,152 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#090d16">
-  <meta name="description" content="Starfall Protocol — jogo Survivors-like sci-fi em JavaScript puro.">
+  <meta name="theme-color" content="#050914">
+  <meta name="description" content="Starfall Protocol — sobreviva ao protocolo em uma experiência sci-fi Survivors-like.">
   <title>Starfall Protocol</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles/main.css">
+  <link rel="stylesheet" href="./styles/menu.css">
 </head>
 <body>
-  <main class="game-shell">
-    <header class="game-header">
-      <h1>STARFALL PROTOCOL</h1>
-      <p>O protocolo de sobrevivência está em preparação.</p>
+  <main class="app-shell" id="app">
+    <div class="space-scene" aria-hidden="true">
+      <div class="space-scene__stars space-scene__stars--far"></div>
+      <div class="space-scene__nebula"></div>
+      <div class="space-scene__planet"></div>
+      <div class="space-scene__stars space-scene__stars--near"></div>
+      <div class="space-scene__horizon"></div>
+      <div class="space-scene__vignette"></div>
+    </div>
+
+    <div class="interface-frame" aria-hidden="true">
+      <span class="frame-corner frame-corner--tl"></span>
+      <span class="frame-corner frame-corner--tr"></span>
+      <span class="frame-corner frame-corner--bl"></span>
+      <span class="frame-corner frame-corner--br"></span>
+      <span class="frame-line frame-line--top"></span>
+      <span class="frame-line frame-line--bottom"></span>
+    </div>
+
+    <header class="system-header">
+      <a class="system-mark" href="./" aria-label="Starfall Protocol — início">
+        <span class="system-mark__symbol" aria-hidden="true">✦</span>
+        <span>ST<span class="accent-text">/</span>R SYSTEMS</span>
+      </a>
+      <div class="system-status"><span class="status-dot"></span> SISTEMA ONLINE</div>
     </header>
 
-    <section class="game-stage" aria-label="Área do jogo">
-      <canvas id="game-canvas" width="960" height="540">
-        Seu navegador não oferece suporte ao Canvas.
-      </canvas>
+    <section class="screen startup-screen" id="startup-screen" aria-labelledby="startup-title">
+      <div class="startup-content">
+        <div class="brand-emblem" aria-hidden="true"><span></span><i></i></div>
+        <p class="eyebrow">PROTOCOLO DE SOBREVIVÊNCIA // 07</p>
+        <h1 class="brand-title" id="startup-title">STARFALL <span>PROTOCOL</span></h1>
+        <p class="brand-subtitle">A SURVIVAL PROTOCOL</p>
+        <div class="boot-status">
+          <div class="boot-status__label"><span>INICIALIZANDO SISTEMAS</span><span class="boot-percent">100%</span></div>
+          <div class="boot-track"><span></span></div>
+          <p>ESTABELECENDO CONEXÃO COM A ESTAÇÃO...</p>
+        </div>
+        <button class="text-button startup-skip" type="button" data-skip-startup>PULAR INTRODUÇÃO <span aria-hidden="true">↗</span></button>
+      </div>
     </section>
-  </main>
 
+    <section class="screen menu-screen" id="main-menu" aria-labelledby="main-title" hidden>
+      <div class="menu-content">
+        <div class="brand-lockup">
+          <p class="eyebrow">PROTOCOLO DE SOBREVIVÊNCIA // 07</p>
+          <h1 class="brand-title" id="main-title">STARFALL <span>PROTOCOL</span></h1>
+          <p class="brand-subtitle">A SURVIVAL PROTOCOL</p>
+        </div>
+        <div class="menu-divider"><span></span><i>SELECIONE UMA DIRETRIZ</i><span></span></div>
+        <nav class="main-navigation" aria-label="Menu principal">
+          <button class="menu-button menu-button--primary" type="button" data-screen="protocol-status">
+            <span class="menu-button__index">01</span><span>INICIAR PROTOCOLO</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="menu-button" type="button" data-screen="operators-screen">
+            <span class="menu-button__index">02</span><span>OPERADORES</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="menu-button" type="button" data-screen="settings-screen">
+            <span class="menu-button__index">03</span><span>CONFIGURAÇÕES</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="menu-button" type="button" data-screen="credits-screen">
+            <span class="menu-button__index">04</span><span>CRÉDITOS</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
+          </button>
+        </nav>
+        <p class="menu-hint"><span class="key-hint">↑</span> <span class="key-hint">↓</span> NAVEGAR <span class="hint-separator">/</span> <span class="key-hint">ENTER</span> CONFIRMAR</p>
+      </div>
+    </section>
+
+    <section class="screen sub-screen" id="operators-screen" aria-labelledby="operators-title" hidden>
+      <div class="panel-content">
+        <p class="eyebrow">ARQUIVO CENTRAL // PESSOAL</p>
+        <h2 class="screen-title" id="operators-title">OPERADORES</h2>
+        <p class="screen-description">O registro de operadores ainda está sendo compilado.</p>
+        <div class="data-panel">
+          <span class="data-panel__icon" aria-hidden="true">⌁</span>
+          <div><strong>ARQUIVO INDISPONÍVEL</strong><p>Os perfis e critérios de desbloqueio serão disponibilizados quando o sistema de personagens estiver implementado.</p></div>
+          <span class="data-panel__code">OPR // 000</span>
+        </div>
+        <button class="back-button" type="button" data-screen="main-menu"><span aria-hidden="true">←</span> VOLTAR AO MENU</button>
+      </div>
+    </section>
+
+    <section class="screen sub-screen" id="settings-screen" aria-labelledby="settings-title" hidden>
+      <div class="panel-content">
+        <p class="eyebrow">SISTEMA CENTRAL // PREFERÊNCIAS</p>
+        <h2 class="screen-title" id="settings-title">CONFIGURAÇÕES</h2>
+        <p class="screen-description">Ajuste a interface de acordo com sua preferência.</p>
+        <div class="settings-panel">
+          <label class="setting-row" for="reduced-motion">
+            <span><strong>REDUZIR MOVIMENTO</strong><small>Desativa os efeitos de movimento do cenário.</small></span>
+            <input id="reduced-motion" type="checkbox">
+          </label>
+          <div class="setting-row">
+            <span><strong>TELA CHEIA</strong><small>Expande a interface para ocupar a tela.</small></span>
+            <button class="small-action" type="button" data-action="fullscreen">ATIVAR ↗</button>
+          </div>
+        </div>
+        <button class="back-button" type="button" data-screen="main-menu"><span aria-hidden="true">←</span> VOLTAR AO MENU</button>
+      </div>
+    </section>
+
+    <section class="screen sub-screen" id="credits-screen" aria-labelledby="credits-title" hidden>
+      <div class="panel-content">
+        <p class="eyebrow">REGISTRO DE DESENVOLVIMENTO // 001</p>
+        <h2 class="screen-title" id="credits-title">CRÉDITOS</h2>
+        <p class="screen-description">Um projeto independente em desenvolvimento.</p>
+        <div class="credits-grid">
+          <div><span>DESENVOLVIMENTO</span><strong>ARTHUR NUNES</strong></div>
+          <div><span>TECNOLOGIAS</span><strong>HTML · CSS · JAVASCRIPT</strong></div>
+          <div><span>RENDERIZAÇÃO</span><strong>CANVAS 2D</strong></div>
+          <div><span>GÊNERO</span><strong>SCI-FI SURVIVORS-LIKE</strong></div>
+        </div>
+        <button class="back-button" type="button" data-screen="main-menu"><span aria-hidden="true">←</span> VOLTAR AO MENU</button>
+      </div>
+    </section>
+
+    <section class="screen sub-screen" id="protocol-status" aria-labelledby="protocol-title" hidden>
+      <div class="panel-content">
+        <p class="eyebrow">PROTOCOLO // STATUS DE EXECUÇÃO</p>
+        <h2 class="screen-title" id="protocol-title">SISTEMA EM PREPARAÇÃO</h2>
+        <p class="screen-description">O núcleo de sobrevivência ainda não foi integrado à interface.</p>
+        <div class="data-panel data-panel--warning">
+          <span class="data-panel__icon" aria-hidden="true">!</span>
+          <div><strong>INICIALIZAÇÃO INDISPONÍVEL</strong><p>O acesso à arena será liberado quando movimentação, combate e geração de hordas estiverem implementados.</p></div>
+          <span class="data-panel__code">SYS // 001</span>
+        </div>
+        <button class="back-button" type="button" data-screen="main-menu"><span aria-hidden="true">←</span> VOLTAR AO MENU</button>
+      </div>
+    </section>
+
+    <footer class="system-footer">
+      <span>STARFALL PROTOCOL <i>·</i> V. 0.1.0</span>
+      <span>STATUS: <strong>EM DESENVOLVIMENTO</strong></span>
+    </footer>
+    <p class="sr-only" id="interface-announcer" aria-live="polite"></p>
+  </main>
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>
