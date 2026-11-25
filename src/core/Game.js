@@ -3,8 +3,8 @@ import { GameLoop } from "./GameLoop.js";
 import { Input } from "./Input.js";
 import { Player } from "./Player.js";
 import { Renderer } from "./Renderer.js";
+import { WORLD } from "./World.js";
 
-const WORLD = Object.freeze({ width: 2800, height: 2000 });
 
 export class Game {
   #input = new Input();

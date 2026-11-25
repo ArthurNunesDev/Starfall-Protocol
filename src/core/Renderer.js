@@ -1,3 +1,5 @@
+import { WORLD } from "./World.js";
+
 export class Renderer {
   #canvas;
   #context;
@@ -15,8 +17,8 @@ export class Renderer {
     this.#canvas = canvas;
     this.#context = context;
     this.#stars = Array.from({ length: 150 }, (_, i) => ({
-      x: (i * 197 + 83) % 2800,
-      y: (i * 311 + 47) % 2000,
+      x: (i * 197 + 83) % WORLD.width,
+      y: (i * 311 + 47) % WORLD.height,
       radius: i % 9 === 0 ? 1.7 : 0.8,
       alpha: 0.2 + ((i * 13) % 60) / 100,
     }));

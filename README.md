@@ -50,7 +50,8 @@ Acesse `http://localhost:8000`.
 │   │   ├── GameLoop.js
 │   │   ├── Input.js
 │   │   ├── Player.js
-│   │   └── Renderer.js
+│   │   ├── Renderer.js
+│   │   └── World.js
 │   └── ui/
 │       ├── MainMenu.js
 │       ├── ParallaxBackground.js

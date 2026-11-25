@@ -38,6 +38,7 @@ jobs:
           test -f src/core/GameLoop.js
           test -f src/core/Input.js
           test -f src/core/Renderer.js
+          test -f src/core/World.js
           test -f src/ui/ScreenManager.js
           test -f src/ui/StartupScreen.js
           test -f src/ui/MainMenu.js
