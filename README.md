@@ -81,4 +81,4 @@ Acesse `http://localhost:8000`.
 
 ## Status
 
-**Etapa 2 — Interface:** splash screen, menu principal, telas informativas, configurações básicas e cenário parallax.
+**Etapa 3 — Jogador:** movimentação top-down, arena de teste, câmera follow e limites do mapa.

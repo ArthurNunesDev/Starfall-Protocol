@@ -64,7 +64,7 @@
         </div>
         <div class="menu-divider"><span></span><i>SELECIONE UMA DIRETRIZ</i><span></span></div>
         <nav class="main-navigation" aria-label="Menu principal">
-          <button class="menu-button menu-button--primary" type="button" data-screen="protocol-status">
+          <button class="menu-button menu-button--primary" type="button" data-action="start-game">
             <span class="menu-button__index">01</span><span>INICIAR PROTOCOLO</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
           </button>
           <button class="menu-button" type="button" data-screen="operators-screen">
@@ -129,17 +129,22 @@
       </div>
     </section>
 
-    <section class="screen sub-screen" id="protocol-status" aria-labelledby="protocol-title" hidden>
-      <div class="panel-content">
-        <p class="eyebrow">PROTOCOLO // STATUS DE EXECUÇÃO</p>
-        <h2 class="screen-title" id="protocol-title">SISTEMA EM PREPARAÇÃO</h2>
-        <p class="screen-description">O núcleo de sobrevivência ainda não foi integrado à interface.</p>
-        <div class="data-panel data-panel--warning">
-          <span class="data-panel__icon" aria-hidden="true">!</span>
-          <div><strong>INICIALIZAÇÃO INDISPONÍVEL</strong><p>O acesso à arena será liberado quando movimentação, combate e geração de hordas estiverem implementados.</p></div>
-          <span class="data-panel__code">SYS // 001</span>
-        </div>
-        <button class="back-button" type="button" data-screen="main-menu"><span aria-hidden="true">←</span> VOLTAR AO MENU</button>
+    <section class="screen game-screen" id="game-screen" aria-labelledby="game-title" hidden>
+      <div class="game-topbar">
+        <div><p class="eyebrow">PROTOCOLO // ÁREA DE TESTE</p><h2 class="game-title" id="game-title">ZONA DE OPERAÇÃO <span>01</span></h2></div>
+        <button class="game-exit-button" type="button" data-screen="main-menu">ABORTAR TESTE <span aria-hidden="true">×</span></button>
+      </div>
+      <div class="game-viewport">
+        <canvas id="game-canvas" aria-label="Arena de teste. Use W, A, S, D ou as setas do teclado para movimentar o operador."></canvas>
+        <div class="game-viewport__corner game-viewport__corner--tl" aria-hidden="true"></div>
+        <div class="game-viewport__corner game-viewport__corner--tr" aria-hidden="true"></div>
+        <div class="game-viewport__corner game-viewport__corner--bl" aria-hidden="true"></div>
+        <div class="game-viewport__corner game-viewport__corner--br" aria-hidden="true"></div>
+      </div>
+      <div class="game-bottombar">
+        <span><i class="game-status-dot"></i> SIMULAÇÃO ATIVA</span>
+        <span>MOVIMENTO <strong>W A S D</strong> / <strong>↑ ↓ ← →</strong></span>
+        <span>MAPA <strong>2800 × 2000</strong></span>
       </div>
     </section>
 
