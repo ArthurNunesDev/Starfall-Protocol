@@ -145,7 +145,7 @@ export class MainMenu {
       menuButton.disabled = !hasEntries;
       menuButton.title = hasEntries ? "" : (type === "weapons"
         ? "Desbloqueie uma arma durante uma partida."
-        : "Derrote um inimigo para liberar o banco de dados.");
+        : "Derrote um inimigo para liberar o índice de inimigos.");
       const lockLabel = menuButton.querySelector(".menu-button__lock");
       if (lockLabel) lockLabel.textContent = hasEntries ? "" : "BLOQUEADO";
     }
