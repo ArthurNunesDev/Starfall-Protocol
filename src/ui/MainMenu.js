@@ -7,15 +7,24 @@ export class MainMenu {
     this.#game = game;
     document.addEventListener("click", this.#handleClick);
     document.addEventListener("keydown", this.#handleKeydown);
+    document.addEventListener("fullscreenchange", this.#handleFullscreenChange);
+
     const motionToggle = document.querySelector("#reduced-motion");
     motionToggle?.addEventListener("change", (event) => {
       document.body.classList.toggle("reduce-motion", event.currentTarget.checked);
     });
+
     const fullscreenButton = document.querySelector('[data-action="fullscreen"]');
     fullscreenButton?.addEventListener("click", () => this.#toggleFullscreen(fullscreenButton));
   }
 
   #handleClick = (event) => {
+    const gameFullscreenButton = event.target.closest('[data-action="game-fullscreen"]');
+    if (gameFullscreenButton) {
+      this.#toggleGameFullscreen(gameFullscreenButton);
+      return;
+    }
+
     const screenButton = event.target.closest("[data-screen]");
     if (screenButton) {
       if (screenButton.dataset.screen === "main-menu") this.#game.stop();
@@ -34,12 +43,24 @@ export class MainMenu {
   };
 
   #handleKeydown = (event) => {
+    if (event.key === "Escape" && this.#screenManager.currentScreen === "game-screen") {
+      const viewport = document.querySelector(".game-viewport");
+      if (document.fullscreenElement === viewport) {
+        event.preventDefault();
+        document.exitFullscreen().catch((error) => {
+          console.error("Não foi possível sair da tela cheia:", error);
+        });
+        return;
+      }
+    }
+
     if (event.key === "Escape" && this.#screenManager.currentScreen !== "main-menu"
       && this.#screenManager.currentScreen !== "startup-screen") {
       if (this.#screenManager.currentScreen === "game-screen") this.#game.stop();
       this.#screenManager.show("main-menu");
       return;
     }
+
     if (!["ArrowDown", "ArrowUp"].includes(event.key)
       || this.#screenManager.currentScreen !== "main-menu") return;
     const buttons = [...document.querySelectorAll("#main-menu [data-screen], #main-menu [data-action]")];
@@ -48,6 +69,35 @@ export class MainMenu {
     event.preventDefault();
     buttons[next]?.focus();
   };
+
+  #handleFullscreenChange = () => {
+    const button = document.querySelector('[data-action="game-fullscreen"]');
+    const viewport = document.querySelector(".game-viewport");
+    if (!button || !viewport) return;
+
+    const isFullscreen = document.fullscreenElement === viewport;
+    button.textContent = isFullscreen ? "SAIR DA TELA CHEIA" : "TELA CHEIA";
+    button.setAttribute("aria-label", isFullscreen ? "Sair da tela cheia" : "Expandir mapa para tela cheia");
+  };
+
+  async #toggleGameFullscreen(button) {
+    const viewport = document.querySelector(".game-viewport");
+    if (!viewport) return;
+
+    try {
+      if (document.fullscreenElement === viewport) {
+        await document.exitFullscreen();
+      } else {
+        if (!viewport.requestFullscreen) {
+          throw new Error("Tela cheia não é suportada neste navegador.");
+        }
+        await viewport.requestFullscreen();
+      }
+    } catch (error) {
+      console.error("Não foi possível alterar o modo de tela cheia do mapa:", error);
+      button.textContent = "INDISPONÍVEL";
+    }
+  }
 
   async #toggleFullscreen(button) {
     try {
