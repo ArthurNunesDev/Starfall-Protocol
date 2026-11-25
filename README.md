@@ -1,5 +1,13 @@
 # Starfall Protocol
 
+[![Publicação no GitHub Pages](https://github.com/ArthurNunesDev/Starfall-Protocol/actions/workflows/deploy.yml/badge.svg)](https://github.com/ArthurNunesDev/Starfall-Protocol/actions/workflows/deploy.yml)
+
+## Jogue
+
+**[Acessar Starfall Protocol](https://arthurnunesdev.github.io/Starfall-Protocol/)**
+
+O jogo é publicado automaticamente pelo GitHub Actions a cada atualização enviada para a branch `main`.
+
 Jogo Survivors-like sci-fi desenvolvido individualmente com **HTML, CSS e JavaScript puro**, utilizando Canvas 2D e módulos ES.
 
 ## Conceito
