@@ -32,6 +32,12 @@ jobs:
           test -f styles/main.css
           test -f styles/menu.css
           test -f src/main.js
+          test -f src/core/Game.js
+          test -f src/core/Camera.js
+          test -f src/core/Player.js
+          test -f src/core/GameLoop.js
+          test -f src/core/Input.js
+          test -f src/core/Renderer.js
           test -f src/ui/ScreenManager.js
           test -f src/ui/StartupScreen.js
           test -f src/ui/MainMenu.js

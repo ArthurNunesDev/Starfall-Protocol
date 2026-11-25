@@ -45,9 +45,11 @@ Acesse `http://localhost:8000`.
 ├── src/
 │   ├── main.js
 │   ├── core/
+│   │   ├── Camera.js
 │   │   ├── Game.js
 │   │   ├── GameLoop.js
 │   │   ├── Input.js
+│   │   ├── Player.js
 │   │   └── Renderer.js
 │   └── ui/
 │       ├── MainMenu.js
