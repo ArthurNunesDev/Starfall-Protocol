@@ -38,7 +38,7 @@ jobs:
           test -f src/core/Camera.js
           test -f src/core/Player.js
           test -f src/core/SoldierSprite.js
-          test -f assets/sprites/soldier.png
+          test -f assets/sprites/soldier.webp
           test -f src/core/GameLoop.js
           test -f src/core/Input.js
           test -f src/core/Renderer.js
