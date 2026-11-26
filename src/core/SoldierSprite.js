@@ -1,14 +1,10 @@
 const DIRECTIONS = Object.freeze(["N", "NE", "E", "SE", "S", "SW", "W", "NW"]);
-const ANIMATIONS = Object.freeze(["idle", "run", "shoot", "melee", "hurt", "death"]);
+const ANIMATIONS = Object.freeze(["idle", "run"]);
 
 function createAtlas() {
   const definitions = {
     idle: { start: 0, count: 6, loop: true, priority: 0, durations: [140, 140, 140, 140, 140, 140] },
     run: { start: 6, count: 8, loop: true, priority: 1, durations: [75, 75, 75, 75, 75, 75, 75, 75] },
-    shoot: { start: 14, count: 5, loop: false, priority: 2, durations: [50, 50, 60, 70, 90] },
-    melee: { start: 19, count: 7, loop: false, priority: 3, durations: [110, 90, 35, 35, 45, 70, 120] },
-    hurt: { start: 26, count: 4, loop: false, priority: 4, durations: [60, 60, 70, 80] },
-    death: { start: 30, count: 9, loop: false, hold: true, priority: 5, durations: [70, 70, 80, 70, 70, 70, 70, 60, 700] },
   };
   const animations = {};
 
@@ -31,20 +27,20 @@ function createAtlas() {
     };
   }
 
-  return { version: 2, image: "soldier.png", cell: { w: 64, h: 64 },
+  return { version: 2, image: "soldier.webp", cell: { w: 64, h: 64 },
     pivot: { x: 32, y: 38 }, directions: DIRECTIONS, animations };
 }
 
 export async function loadSoldierAssets() {
   const atlas = createAtlas();
   const image = new Image();
-  image.src = new URL("../../assets/sprites/soldier.png", import.meta.url).href;
+  image.src = new URL("../../assets/sprites/soldier.webp", import.meta.url).href;
   try {
     await image.decode();
   } catch (cause) {
     throw new Error("Não foi possível decodificar a spritesheet do operador.", { cause });
   }
-  if (image.naturalWidth !== 2496 || image.naturalHeight !== 512) {
+  if (image.naturalWidth !== 896 || image.naturalHeight !== 512) {
     throw new Error(`Dimensões inesperadas da spritesheet: ${image.naturalWidth}x${image.naturalHeight}.`);
   }
   return Object.freeze({ atlas, image });
