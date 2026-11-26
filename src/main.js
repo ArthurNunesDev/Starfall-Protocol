@@ -17,6 +17,8 @@ new MainMenu(screenManager, game, playerProfile);
 new ParallaxBackground();
 
 const startupScreen = new StartupScreen(screenManager);
+await game.loadAssets();
+
 if (game.restoreSession()) {
   screenManager.show("game-screen", { announce: false });
   game.start();
