@@ -42,6 +42,9 @@ Acesse `http://localhost:8000`.
 .
 ├── index.html
 ├── README.md
+├── assets/
+│   └── sprites/
+│       └── soldier.png
 ├── src/
 │   ├── main.js
 │   ├── core/
@@ -87,11 +90,11 @@ Acesse `http://localhost:8000`.
 ## Fluxo atual
 
 - **Entrar:** abre a seleção de operadores antes da partida.
-- **Personagens:** o operador inicial começa desbloqueado; a seleção é salva no perfil.
+- **Personagens:** o operador inicial começa desbloqueado; a seleção é salva no perfil. O operador usa spritesheet pixel art com animações direcionais de idle e corrida; os quadros de combate, dano e morte ficam disponíveis para as próximas etapas.
 - **Arsenal:** fica bloqueado até que uma arma seja registrada como desbloqueada.
 - **Banco de dados:** fica bloqueado até que o jogador derrote e registre seu primeiro inimigo.
 - **Persistência:** perfil de progressão e sessão ativa usam registros separados no LocalStorage.
 
 ## Status
 
-**Etapa 3 — Jogador:** movimentação top-down, arena de teste, câmera follow e limites do mapa. A sessão ativa é restaurada após recarregar a página; o perfil mantém a seleção e os desbloqueios.
+**Etapa 3 — Jogador:** movimentação top-down, operador em pixel art com oito direções, animações de idle e corrida, arena de teste, câmera follow e limites do mapa. A sessão ativa é restaurada após recarregar a página; o perfil mantém a seleção e os desbloqueios.
