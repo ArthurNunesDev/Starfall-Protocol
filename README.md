@@ -44,7 +44,7 @@ Acesse `http://localhost:8000`.
 ├── README.md
 ├── assets/
 │   └── sprites/
-│       └── soldier.png
+│       └── soldier.webp
 ├── src/
 │   ├── main.js
 │   ├── core/
