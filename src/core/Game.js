@@ -5,6 +5,7 @@ import { Player } from "./Player.js";
 import { Renderer } from "./Renderer.js";
 import { GameSession } from "./GameSession.js";
 import { WORLD } from "./World.js";
+import { loadSoldierAssets } from "./SoldierSprite.js";
 
 const PLAYER_RADIUS = 15;
 const SAVE_INTERVAL = 1;
@@ -12,6 +13,7 @@ const SAVE_INTERVAL = 1;
 export class Game {
   #input = new Input();
   #renderer;
+  #spriteAssets = null;
   #player = new Player(WORLD.width / 2, WORLD.height / 2);
   #camera = new Camera();
   #loop;
@@ -31,6 +33,18 @@ export class Game {
 
     window.addEventListener("pagehide", this.#handlePageHide);
     document.addEventListener("visibilitychange", this.#handleVisibilityChange);
+  }
+
+  async loadAssets() {
+    if (this.#spriteAssets) return true;
+    try {
+      this.#spriteAssets = await loadSoldierAssets();
+      this.#player.setSpriteAssets(this.#spriteAssets);
+      return true;
+    } catch (error) {
+      console.error("Sprites do operador indisponíveis; será usado o visual reserva:", error);
+      return false;
+    }
   }
 
   restoreSession() {
@@ -90,7 +104,7 @@ export class Game {
     this.#saveAccumulator = 0;
     this.#pendingCamera = null;
     this.#characterId = "operator-01";
-    this.#player = new Player(WORLD.width / 2, WORLD.height / 2);
+    this.#player = new Player(WORLD.width / 2, WORLD.height / 2, this.#spriteAssets);
     this.#camera = new Camera();
   }
 
