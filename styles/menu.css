@@ -187,4 +187,4 @@ button.character-card:hover,button.character-card:focus-visible,.character-card.
 
 
 /* Sprite do operador na seleção de personagens. */
-.character-card__sprite{display:block;width:96px;height:96px;flex:0 0 96px;background-image:url("../assets/sprites/soldier.png");background-repeat:no-repeat;background-size:3744px 768px;background-position:0 -384px;image-rendering:pixelated;filter:drop-shadow(0 0 9px rgba(54,198,240,.28))}
+.character-card__sprite{display:block;width:96px;height:96px;flex:0 0 96px;background-image:url("../assets/sprites/soldier.webp");background-repeat:no-repeat;background-size:1344px 768px;background-position:0 -384px;image-rendering:pixelated;filter:drop-shadow(0 0 9px rgba(54,198,240,.28))}
