@@ -34,6 +34,7 @@ export class Game {
       update: (deltaTime) => this.update(deltaTime),
       render: () => this.render(),
     });
+
     window.addEventListener("pagehide", this.#handlePageHide);
     document.addEventListener("visibilitychange", this.#handleVisibilityChange);
   }
@@ -58,8 +59,15 @@ export class Game {
   restoreSession() {
     const savedSession = this.#session.load();
     if (!savedSession) return false;
-    this.#player.x = Math.max(PLAYER_RADIUS, Math.min(WORLD.width - PLAYER_RADIUS, savedSession.player.x));
-    this.#player.y = Math.max(PLAYER_RADIUS, Math.min(WORLD.height - PLAYER_RADIUS, savedSession.player.y));
+
+    this.#player.x = Math.max(
+      PLAYER_RADIUS,
+      Math.min(WORLD.width - PLAYER_RADIUS, savedSession.player.x),
+    );
+    this.#player.y = Math.max(
+      PLAYER_RADIUS,
+      Math.min(WORLD.height - PLAYER_RADIUS, savedSession.player.y),
+    );
     this.#elapsedTime = savedSession.elapsedTime;
     this.#characterId = savedSession.characterId || "operator-01";
     this.#pendingCamera = savedSession.camera;
@@ -69,14 +77,22 @@ export class Game {
   start(characterId = this.#characterId) {
     if (this.#running) return;
     if (typeof characterId === "string" && characterId.trim()) this.#characterId = characterId;
+
     this.#renderer.resize();
+
     if (this.#pendingCamera) {
-      this.#camera.restore(this.#pendingCamera.x, this.#pendingCamera.y,
-        this.#renderer.width, this.#renderer.height, WORLD);
+      this.#camera.restore(
+        this.#pendingCamera.x,
+        this.#pendingCamera.y,
+        this.#renderer.width,
+        this.#renderer.height,
+        WORLD,
+      );
       this.#pendingCamera = null;
     } else {
       this.#camera.snapTo(this.#player, this.#renderer.width, this.#renderer.height, WORLD);
     }
+
     this.#enemies?.spawnInitialWave(this.#player, WORLD);
     this.#input.attach();
     this.#running = true;
@@ -109,6 +125,7 @@ export class Game {
     this.#camera.follow(this.#player, this.#renderer.width, this.#renderer.height, WORLD, deltaTime);
     this.#elapsedTime += deltaTime;
     this.#saveAccumulator += deltaTime;
+
     if (this.#saveAccumulator >= SAVE_INTERVAL) {
       this.#saveAccumulator %= SAVE_INTERVAL;
       this.#saveSession();
@@ -121,11 +138,17 @@ export class Game {
 
   #saveSession() {
     if (!this.#running) return;
-    this.#session.save({ elapsedTime: this.#elapsedTime, characterId: this.#characterId,
-      player: this.#player, camera: this.#camera });
+
+    this.#session.save({
+      elapsedTime: this.#elapsedTime,
+      characterId: this.#characterId,
+      player: this.#player,
+      camera: this.#camera,
+    });
   }
 
   #handlePageHide = () => this.#saveSession();
+
   #handleVisibilityChange = () => {
     if (document.visibilityState === "hidden") this.#saveSession();
   };
