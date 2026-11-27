@@ -269,6 +269,7 @@ export class AbilitySystem {
         age: 0,
         duration: 0.32,
         red: charge > 5,
+        chargeRatio: clamp(charge / ULTIMATE_MAX_CHARGE, 0, 1),
       });
       this.#damageEnemy(target, damage, enemyManager);
     }
@@ -451,7 +452,10 @@ export class AbilitySystem {
         ctx.shadowColor = ctx.strokeStyle;
         ctx.shadowBlur = effect.type === "laser" ? (isRedLaser ? 42 : 28) : isEmpoweredShot ? 24 : 12;
         ctx.lineCap = "round";
-        ctx.lineWidth = effect.type === "laser" ? (isRedLaser ? 18 : 12) * (1 - progress) + 3 : isEmpoweredShot ? 4 : 2;
+        const laserThickness = 5 + (effect.chargeRatio ?? 0) * 19;
+        ctx.lineWidth = effect.type === "laser"
+          ? laserThickness * (1 - progress * 0.35) + 2
+          : isEmpoweredShot ? 4 : 2;
         ctx.beginPath();
         ctx.moveTo(effect.x1, effect.y1);
         ctx.lineTo(effect.x2, effect.y2);
@@ -459,7 +463,7 @@ export class AbilitySystem {
         if (isRedLaser) {
           ctx.shadowBlur = 8;
           ctx.strokeStyle = "#fff0f3";
-          ctx.lineWidth = 3;
+          ctx.lineWidth = 2 + (effect.chargeRatio ?? 0) * 3;
           ctx.beginPath();
           ctx.moveTo(effect.x1, effect.y1);
           ctx.lineTo(effect.x2, effect.y2);
