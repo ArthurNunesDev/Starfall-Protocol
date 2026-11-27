@@ -108,7 +108,8 @@ Acesse `http://localhost:8000`.
 - **Bloater:** aproximação seguida de explosão em área.
 - **Waves:** 100 waves com duração fixa de 45 segundos cada. A próxima wave começa automaticamente, sem depender da eliminação de todos os inimigos.
 - **Desbloqueio de mobs:** wave 1 começa apenas com Brute; Spitter entra na 15; Crawler na 35; Bloater na 50. O boss fica desativado nesta etapa.
-- **Escalonamento:** os grupos crescem progressivamente de 1 inimigo na wave 1 até 25 na wave 100; o intervalo entre spawns cai linearmente de 8 segundos até 0,75 segundo. Não há limite artificial de inimigos ativos.
+- **Escalonamento de spawn:** cada grupo cresce linearmente de 1 inimigo na wave 1 até 100 na wave 100; o intervalo entre grupos diminui de 2 segundos até 0,1 segundo.
+- **Pontos de spawn:** 20 regiões distribuídas em uma grade por toda a arena de 2800 × 2000. Cada inimigo escolhe uma região e recebe uma pequena variação de posição, espalhando os grupos pelo mapa. Não há limite artificial de inimigos ativos.
 - O operador possui 100 pontos de integridade, janela curta de invulnerabilidade após receber dano, HUD de vida/tempo/ameaças/eliminação e tela de derrota com reinício.
 - O Fuzil de Pulso dispara automaticamente contra o inimigo mais próximo, com projéteis físicos, alcance, cadência e dano configurados. Eliminações são registradas no perfil e liberam o Arsenal.
 - Os atlases JSON controlam os eventos de impacto das animações; as spritesheets são carregadas e validadas antes da partida.
