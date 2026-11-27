@@ -125,6 +125,25 @@ export class Player {
     ctx.fillStyle = "#172b3e";
     ctx.fillRect(5, 4, 7, 5);
     ctx.restore();
+
+    const healthRatio = Math.max(0, Math.min(1, this.health / MAX_HEALTH));
+    const healthBarWidth = 42;
+    const healthBarY = this.y + 31;
+    ctx.save();
+    ctx.fillStyle = "rgba(3, 8, 16, 0.88)";
+    ctx.fillRect(this.x - healthBarWidth / 2, healthBarY, healthBarWidth, 5);
+    ctx.fillStyle = healthRatio > 0.35 ? "#65e4c1" : "#f16e79";
+    ctx.fillRect(this.x - healthBarWidth / 2, healthBarY, healthBarWidth * healthRatio, 5);
+    ctx.strokeStyle = "rgba(190, 230, 245, 0.55)";
+    ctx.lineWidth = 0.7;
+    ctx.strokeRect(this.x - healthBarWidth / 2, healthBarY, healthBarWidth, 5);
+    ctx.font = "600 9px Rajdhani, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#e8f4ff";
+    ctx.shadowColor = "#050b16";
+    ctx.shadowBlur = 4;
+    ctx.fillText(`${Math.ceil(this.health)} / ${MAX_HEALTH}`, this.x, healthBarY + 15);
+    ctx.restore();
   }
 }
 
