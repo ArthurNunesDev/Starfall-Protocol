@@ -37,6 +37,11 @@ export class MainMenu {
       return;
     }
 
+    if (actionButton?.dataset.action === "restart-game") {
+      this.#game.restart();
+      return;
+    }
+
     if (actionButton?.dataset.action === "start-selected-game") {
       const profile = this.#profile.getProfile();
       if (!profile.unlockedCharacters.includes(profile.selectedCharacter)) {
