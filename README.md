@@ -111,7 +111,7 @@ Acesse `http://localhost:8000`.
 - **Escalonamento de spawn:** cada grupo cresce linearmente de 1 inimigo na wave 1 até 100 na wave 100; o intervalo entre grupos diminui de 2 segundos até 0,1 segundo.
 - **Pontos de spawn:** 20 regiões distribuídas em uma grade por toda a arena de 2800 × 2000. Cada inimigo escolhe uma região e recebe uma pequena variação de posição, espalhando os grupos pelo mapa. Não há limite artificial de inimigos ativos.
 - O operador possui 100 pontos de integridade, janela curta de invulnerabilidade após receber dano, HUD de vida/tempo/ameaças/eliminação e tela de derrota com reinício.
-- O Fuzil de Pulso dispara automaticamente contra o inimigo mais próximo, com projéteis físicos, alcance, cadência e dano configurados. Eliminações são registradas no perfil e liberam o Arsenal.
+- O Fuzil de Pulso começa com 1 de dano por disparo, cadência de 1,5 segundo e alcance de aquisição de 300 unidades. O cursor prioriza o inimigo apontado quando ele está dentro do alcance; caso contrário, o disparo automático seleciona o inimigo mais próximo ao alcance. Eliminações são registradas no perfil e liberam o Arsenal.
 - Os atlases JSON controlam os eventos de impacto das animações; as spritesheets são carregadas e validadas antes da partida.
 
 A primeira arma está integrada; novas armas, habilidades manuais, experiência e aprimoramentos continuam como etapas futuras.
