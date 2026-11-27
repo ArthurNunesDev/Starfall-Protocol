@@ -1,7 +1,7 @@
 import { Camera } from "./Camera.js";
 import { GameLoop } from "./GameLoop.js";
 import { Input } from "./Input.js";
-import { Player, MAX_HEALTH } from "./Player.js";
+import { Player } from "./Player.js";
 import { Renderer } from "./Renderer.js";
 import { GameSession } from "./GameSession.js";
 import { WORLD } from "./World.js";
@@ -161,8 +161,6 @@ export class Game {
       camera: this.#camera,
       elapsedTime: this.#elapsedTime,
       enemyCount: this.#enemies?.count ?? 0,
-      health: this.#player.health,
-      maxHealth: MAX_HEALTH,
       kills: this.#enemies?.kills ?? 0,
       wave: this.#enemies?.wave ?? Math.min(100, Math.floor(this.#elapsedTime / 45) + 1),
     });
