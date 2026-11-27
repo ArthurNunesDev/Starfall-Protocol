@@ -450,9 +450,11 @@ export class AbilitySystem {
         const isEmpoweredShot = effect.type === "drone-shot" && effect.empowered;
         ctx.strokeStyle = isRedLaser || isEmpoweredShot ? "#ff1744" : effect.type === "laser" ? "#8af5ff" : "#5deaff";
         ctx.shadowColor = ctx.strokeStyle;
-        ctx.shadowBlur = effect.type === "laser" ? (isRedLaser ? 42 : 28) : isEmpoweredShot ? 24 : 12;
+        ctx.shadowBlur = effect.type === "laser"
+          ? (isRedLaser ? 48 : 34) + (effect.chargeRatio ?? 0) * 30
+          : isEmpoweredShot ? 24 : 12;
         ctx.lineCap = "round";
-        const laserThickness = 5 + (effect.chargeRatio ?? 0) * 19;
+        const laserThickness = 10 + (effect.chargeRatio ?? 0) * 50;
         ctx.lineWidth = effect.type === "laser"
           ? laserThickness * (1 - progress * 0.35) + 2
           : isEmpoweredShot ? 4 : 2;
@@ -463,7 +465,7 @@ export class AbilitySystem {
         if (isRedLaser) {
           ctx.shadowBlur = 8;
           ctx.strokeStyle = "#fff0f3";
-          ctx.lineWidth = 2 + (effect.chargeRatio ?? 0) * 3;
+          ctx.lineWidth = 4 + (effect.chargeRatio ?? 0) * 10;
           ctx.beginPath();
           ctx.moveTo(effect.x1, effect.y1);
           ctx.lineTo(effect.x2, effect.y2);
