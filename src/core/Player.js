@@ -110,7 +110,7 @@ export class Player {
     this.#animator?.update(deltaTime);
   }
 
-  render(ctx) {
+  render(ctx, weaponVisualState = null) {
     ctx.save();
     if (this.damageFlash > 0) ctx.globalAlpha = 0.55;
     if (this.#spriteAssets && this.#animator) {
@@ -139,14 +139,19 @@ export class Player {
 
     ctx.translate(Math.round(this.x), Math.round(this.y));
     ctx.rotate(this.#facingAngle);
-    ctx.shadowColor = "rgba(68, 220, 255, 0.7)";
-    ctx.shadowBlur = 8;
-    ctx.fillStyle = "#263f55";
+    const chargedWeapon = weaponVisualState?.ultimateRed === true;
+    ctx.shadowColor = chargedWeapon ? "rgba(255, 35, 75, 0.95)" : "rgba(68, 220, 255, 0.7)";
+    ctx.shadowBlur = chargedWeapon ? 22 : 8;
+    ctx.fillStyle = chargedWeapon ? "#5a1729" : "#263f55";
     ctx.fillRect(1, -5, 22, 10);
-    ctx.fillStyle = "#8deeff";
+    ctx.fillStyle = chargedWeapon ? "#ff294f" : "#8deeff";
     ctx.fillRect(10, -3, 15, 6);
-    ctx.fillStyle = "#d7faff";
+    ctx.fillStyle = chargedWeapon ? "#ffd5dc" : "#d7faff";
     ctx.fillRect(22, -2, 7, 4);
+    if (chargedWeapon) {
+      ctx.fillStyle = "rgba(255, 55, 86, 0.8)";
+      ctx.fillRect(5, -7, 14, 2);
+    }
     ctx.fillStyle = "#172b3e";
     ctx.fillRect(5, 4, 7, 5);
     ctx.restore();
