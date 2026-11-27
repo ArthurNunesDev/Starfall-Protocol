@@ -325,6 +325,12 @@ export class AbilitySystem {
     this.#effects = this.#effects.filter((effect) => effect.age < effect.duration);
   }
 
+  get weaponVisualState() {
+    return {
+      ultimateRed: this.#ultimateCharging && this.#ultimateCharge > 5,
+    };
+  }
+
   get weaponModifiers() {
     return {
       damage: this.#ultimateBuffTimer > 0 ? 1.25 : 1,
@@ -355,16 +361,52 @@ export class AbilitySystem {
       const progress = effect.age / effect.duration;
       if (effect.type === "trail") {
         ctx.save();
-        ctx.globalAlpha = Math.max(0, 0.65 * (1 - progress));
-        ctx.strokeStyle = "#62eaff";
-        ctx.shadowColor = "#42dfff";
-        ctx.shadowBlur = 18;
-        ctx.lineWidth = 18;
+        const alpha = Math.max(0, 1 - progress);
+        const dx = effect.endX - effect.startX;
+        const dy = effect.endY - effect.startY;
+        const angle = Math.atan2(dy, dx);
+        ctx.globalAlpha = alpha;
         ctx.lineCap = "round";
+        ctx.shadowBlur = 24;
+        ctx.shadowColor = "#55eaff";
+        ctx.strokeStyle = "rgba(87, 231, 255, 0.22)";
+        ctx.lineWidth = 30 * (1 - progress * 0.45);
         ctx.beginPath();
         ctx.moveTo(effect.startX, effect.startY);
         ctx.lineTo(effect.endX, effect.endY);
         ctx.stroke();
+        ctx.shadowBlur = 14;
+        ctx.strokeStyle = "#6af1ff";
+        ctx.lineWidth = 9 * (1 - progress * 0.35);
+        ctx.beginPath();
+        ctx.moveTo(effect.startX, effect.startY);
+        ctx.lineTo(effect.endX, effect.endY);
+        ctx.stroke();
+        ctx.setLineDash([7, 12]);
+        ctx.lineDashOffset = -effect.age * 70;
+        ctx.strokeStyle = "#d8fbff";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(effect.startX, effect.startY);
+        ctx.lineTo(effect.endX, effect.endY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        for (const [x, y, direction] of [
+          [effect.startX, effect.startY, angle],
+          [effect.endX, effect.endY, angle + Math.PI],
+        ]) {
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(direction);
+          ctx.strokeStyle = "#b9f8ff";
+          ctx.shadowColor = "#4be7ff";
+          ctx.shadowBlur = 18;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 15 * (1 + progress * 0.3), 25 * (1 - progress * 0.25), 0, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
         ctx.restore();
       } else if (effect.type === "pulse") {
         ctx.save();
@@ -380,14 +422,31 @@ export class AbilitySystem {
       } else if (effect.type === "laser" || effect.type === "drone-shot") {
         ctx.save();
         ctx.globalAlpha = Math.max(0, 1 - progress);
-        ctx.strokeStyle = effect.red ? "#ff465e" : effect.type === "laser" ? "#8af5ff" : "#5deaff";
+        const isRedLaser = effect.type === "laser" && effect.red;
+        ctx.strokeStyle = isRedLaser ? "#ff1744" : effect.type === "laser" ? "#8af5ff" : "#5deaff";
         ctx.shadowColor = ctx.strokeStyle;
-        ctx.shadowBlur = effect.type === "laser" ? 28 : 12;
-        ctx.lineWidth = effect.type === "laser" ? 12 * (1 - progress) + 3 : 2;
+        ctx.shadowBlur = effect.type === "laser" ? (isRedLaser ? 42 : 28) : 12;
+        ctx.lineCap = "round";
+        ctx.lineWidth = effect.type === "laser" ? (isRedLaser ? 18 : 12) * (1 - progress) + 3 : 2;
         ctx.beginPath();
         ctx.moveTo(effect.x1, effect.y1);
         ctx.lineTo(effect.x2, effect.y2);
         ctx.stroke();
+        if (isRedLaser) {
+          ctx.shadowBlur = 8;
+          ctx.strokeStyle = "#fff0f3";
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(effect.x1, effect.y1);
+          ctx.lineTo(effect.x2, effect.y2);
+          ctx.stroke();
+          ctx.fillStyle = "#ff3158";
+          ctx.shadowColor = "#ff1744";
+          ctx.shadowBlur = 26;
+          ctx.beginPath();
+          ctx.arc(effect.x2, effect.y2, 13 * (1 - progress) + 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
         ctx.restore();
       }
     }
