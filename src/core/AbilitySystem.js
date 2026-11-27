@@ -286,8 +286,9 @@ export class AbilitySystem {
   onEnemyDefeated(enemy, enemyManager) {
     if (!enemy || this.#reportedDefeats.has(enemy)) return;
     const queue = [enemy];
-    while (queue.length > 0) {
-      const defeated = queue.shift();
+    const targets = enemyManager?.targets ?? [];
+    for (let queueIndex = 0; queueIndex < queue.length; queueIndex += 1) {
+      const defeated = queue[queueIndex];
       if (!defeated || this.#reportedDefeats.has(defeated)) continue;
       this.#reportedDefeats.add(defeated);
       this.#onEnemyDefeated?.({
@@ -310,7 +311,7 @@ export class AbilitySystem {
         color: "#ffbd65",
       });
 
-      for (const nearby of enemyManager?.targets ?? []) {
+      for (const nearby of targets) {
         if (nearby === defeated || nearby.dead || nearby.exploding) continue;
         if (Math.hypot(nearby.x - defeated.x, nearby.y - defeated.y) > NUCLEUS_RADIUS + nearby.radius) continue;
         this.#damageEnemy(nearby, NUCLEUS_DAMAGE, enemyManager, queue);
