@@ -171,10 +171,11 @@ export class AbilitySystem {
   #activateDrone() {
     if (this.#cooldowns.drone > 0 || this.#drones.length >= DRONE_MAX) return;
     this.#cooldowns.drone = DRONE_COOLDOWN;
-    const availableSlots = DRONE_MAX - this.#drones.length;
+    const baseCount = this.#drones.length;
+    const availableSlots = DRONE_MAX - baseCount;
     for (let index = 0; index < availableSlots; index += 1) {
       this.#drones.push({
-        angle: ((this.#drones.length + index) / DRONE_MAX) * Math.PI * 2,
+        angle: ((baseCount + index) / DRONE_MAX) * Math.PI * 2,
         age: 0,
         shotTimer: DRONE_INTERVAL,
         x: 0,
