@@ -87,6 +87,7 @@ export class WeaponSystem {
       damage: WEAPON.damage * damageMultiplier,
       radius: WEAPON.projectileRadius,
       remaining: WEAPON.projectileRange,
+      empowered: modifiers.ultimateActive === true,
     });
 
     if (!this.#unlocked) {
@@ -132,12 +133,20 @@ export class WeaponSystem {
   render(ctx) {
     for (const projectile of this.#projectiles) {
       ctx.save();
-      ctx.shadowColor = "#58eaff";
-      ctx.shadowBlur = 16;
-      ctx.fillStyle = "#a9f7ff";
+      const color = projectile.empowered ? "#ff3158" : "#58eaff";
+      ctx.shadowColor = color;
+      ctx.shadowBlur = projectile.empowered ? 24 : 16;
+      ctx.fillStyle = projectile.empowered ? "#fff0f3" : "#a9f7ff";
       ctx.beginPath();
       ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
       ctx.fill();
+      if (projectile.empowered) {
+        ctx.strokeStyle = "#ff1744";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(projectile.x, projectile.y, projectile.radius + 3, 0, Math.PI * 2);
+        ctx.stroke();
+      }
       ctx.restore();
     }
   }
