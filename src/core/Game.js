@@ -8,6 +8,7 @@ import { WORLD } from "./World.js";
 import { loadSoldierAssets } from "./SoldierSprite.js";
 import { loadEnemyAssets } from "./EnemySprite.js";
 import { EnemyManager } from "./EnemyManager.js";
+import { WeaponSystem } from "./WeaponSystem.js";
 
 const PLAYER_RADIUS = 15;
 const SAVE_INTERVAL = 1;
@@ -28,9 +29,16 @@ export class Game {
   #pendingCamera = null;
   #characterId = "operator-01";
   #gameOverOverlay;
+  #profile;
+  #weapons;
 
-  constructor(canvas) {
+  constructor(canvas, profile = null) {
     this.#renderer = new Renderer(canvas);
+    this.#profile = profile;
+    this.#weapons = new WeaponSystem({
+      onWeaponUnlocked: (weapon) => this.#profile?.unlockWeapon(weapon),
+      onEnemyDefeated: (enemy) => this.#profile?.recordEnemyDefeat(enemy),
+    });
     this.#gameOverOverlay = document.querySelector("#game-over-overlay");
     this.#loop = new GameLoop({
       update: (deltaTime) => this.update(deltaTime),
@@ -111,6 +119,7 @@ export class Game {
     this.#characterId = "operator-01";
     this.#player = new Player(WORLD.width / 2, WORLD.height / 2, this.#spriteAssets);
     this.#enemies = this.#enemyAssets ? new EnemyManager(this.#enemyAssets) : null;
+    this.#weapons.reset();
     this.#camera = new Camera();
     if (this.#gameOverOverlay) this.#gameOverOverlay.hidden = true;
   }
@@ -120,6 +129,7 @@ export class Game {
     this.#player.update(this.#input, deltaTime, WORLD);
     this.#elapsedTime += deltaTime;
     this.#enemies?.update(this.#player, deltaTime, WORLD, this.#elapsedTime);
+    this.#weapons.update(this.#player, this.#enemies, deltaTime);
     this.#camera.follow(this.#player, this.#renderer.width, this.#renderer.height, WORLD, deltaTime);
     this.#saveAccumulator += deltaTime;
 
@@ -146,6 +156,7 @@ export class Game {
       world: WORLD,
       player: this.#player,
       enemies: this.#enemies,
+      weapons: this.#weapons,
       camera: this.#camera,
       elapsedTime: this.#elapsedTime,
       enemyCount: this.#enemies?.count ?? 0,
