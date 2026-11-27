@@ -193,6 +193,7 @@ export class EnemyManager {
   get elapsed() { return this.#elapsed; }
   get wave() { return this.#wave; }
   get waveTimeRemaining() {
+    if (this.#elapsed >= MAX_WAVES * WAVE_DURATION) return 0;
     return WAVE_DURATION - (this.#elapsed % WAVE_DURATION);
   }
   get announcementRemaining() { return this.#announcementTimer; }
