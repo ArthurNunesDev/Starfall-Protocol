@@ -1,17 +1,23 @@
 import { Enemy } from "./Enemy.js";
 
-const MAX_ENEMIES = 22;
-const WAVE_INTERVAL = 7.5;
-const BOSS_TIME = 60;
-const REGULAR_TYPES = ["brute", "crawler", "spitter", "bloater"];
+const MAX_ENEMIES = 70;
+const WAVE_DURATION = 45;
+const MAX_WAVES = 100;
+const FIRST_WAVE_TYPES = ["brute"];
+const WAVE_UNLOCKS = Object.freeze([
+  { wave: 1, types: FIRST_WAVE_TYPES },
+  { wave: 15, types: ["brute", "spitter"] },
+  { wave: 35, types: ["brute", "spitter", "crawler"] },
+  { wave: 50, types: ["brute", "spitter", "crawler", "bloater"] },
+]);
 
 export class EnemyManager {
   #assets;
   #enemies = [];
   #projectiles = [];
   #elapsed = 0;
-  #nextWave = WAVE_INTERVAL;
-  #bossSpawned = false;
+  #wave = 1;
+  #spawnTimer = 0;
   #kills = 0;
 
   constructor(assets) {
@@ -19,34 +25,27 @@ export class EnemyManager {
   }
 
   spawn(type, x, y) {
-    if ((this.#enemies.length >= MAX_ENEMIES && type !== "boss") || !this.#assets?.[type]) return null;
+    if (this.#enemies.length >= MAX_ENEMIES || !this.#assets?.[type]) return null;
     const enemy = new Enemy(type, x, y, this.#assets);
     this.#enemies.push(enemy);
     return enemy;
   }
 
-  spawnInitialWave(player, world) {
-    if (this.#enemies.length > 0) return;
-    this.spawn("brute", Math.min(world.width - 80, player.x + 280), Math.min(world.height - 80, player.y + 80));
-    this.spawn("crawler", Math.max(80, player.x - 320), Math.min(world.height - 80, player.y + 170));
-    this.spawn("spitter", Math.min(world.width - 80, player.x + 360), Math.max(80, player.y - 220));
-    this.spawn("bloater", Math.max(80, player.x - 360), Math.max(80, player.y - 180));
+  // A primeira leva também é controlada pelo relógio de waves.
+  spawnInitialWave() {
+    this.#spawnTimer = 0;
   }
 
   update(player, deltaTime, world, elapsedTime = this.#elapsed + deltaTime) {
-    this.#elapsed = elapsedTime;
-    if (this.#elapsed >= this.#nextWave && this.#enemies.length < MAX_ENEMIES) {
-      const type = REGULAR_TYPES[Math.floor(Math.random() * REGULAR_TYPES.length)];
-      this.#spawnAroundPlayer(player, world, type);
-      const interval = Math.max(3.5, WAVE_INTERVAL - Math.min(3, this.#elapsed / 45));
-      do {
-        this.#nextWave += interval;
-      } while (this.#nextWave <= this.#elapsed);
-    }
+    this.#elapsed = Math.max(0, elapsedTime);
+    this.#wave = Math.min(MAX_WAVES, Math.floor(this.#elapsed / WAVE_DURATION) + 1);
 
-    if (!this.#bossSpawned && this.#elapsed >= BOSS_TIME) {
-      this.#bossSpawned = true;
-      this.#spawnAroundPlayer(player, world, "boss", 520);
+    if (this.#wave <= MAX_WAVES) {
+      this.#spawnTimer -= deltaTime;
+      if (this.#spawnTimer <= 0 && this.#enemies.length < MAX_ENEMIES) {
+        this.#spawnGroup(player, world);
+        this.#spawnTimer = this.#getSpawnInterval(this.#wave);
+      }
     }
 
     for (const enemy of this.#enemies) {
@@ -66,9 +65,38 @@ export class EnemyManager {
     });
   }
 
-  #spawnAroundPlayer(player, world, type, minDistance = 340) {
+  #getAvailableTypes(wave) {
+    let available = FIRST_WAVE_TYPES;
+    for (const unlock of WAVE_UNLOCKS) {
+      if (wave >= unlock.wave) available = unlock.types;
+    }
+    return available;
+  }
+
+  #getSpawnInterval(wave) {
+    // Começa em 8,5 s e acelera gradualmente até 1,5 s nas waves finais.
+    return Math.max(1.5, 8.5 - (wave - 1) * 0.071);
+  }
+
+  #getGroupSize(wave) {
+    // Aumenta um inimigo a cada 10 waves, chegando a grupos de 10.
+    return Math.min(10, 1 + Math.floor((wave - 1) / 10));
+  }
+
+  #spawnGroup(player, world) {
+    const availableTypes = this.#getAvailableTypes(this.#wave);
+    const groupSize = this.#getGroupSize(this.#wave);
+    const remainingSlots = MAX_ENEMIES - this.#enemies.length;
+    const amount = Math.min(groupSize, remainingSlots);
+
+    for (let i = 0; i < amount; i += 1) {
+      const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+      this.#spawnAroundPlayer(player, world, type, 300 + Math.random() * 100);
+    }
+  }
+
+  #spawnAroundPlayer(player, world, type, distance) {
     const angle = Math.random() * Math.PI * 2;
-    const distance = minDistance + Math.random() * 100;
     const x = Math.max(50, Math.min(world.width - 50, player.x + Math.cos(angle) * distance));
     const y = Math.max(50, Math.min(world.height - 50, player.y + Math.sin(angle) * distance));
     this.spawn(type, x, y);
@@ -77,7 +105,6 @@ export class EnemyManager {
   #handleEnemyEvent(event, player) {
     const { enemy, name, targetX, targetY } = event;
     if (name === "hit_start") {
-      if (enemy.type === "boss" && enemy.animator.name === "slam") return;
       const distance = Math.hypot(player.x - enemy.x, player.y - enemy.y);
       if (distance <= enemy.range + player.radius) player.takeDamage(enemy.damage);
     } else if (name === "spit" || name === "volley") {
@@ -98,9 +125,6 @@ export class EnemyManager {
     } else if (name === "blast") {
       const distance = Math.hypot(player.x - enemy.x, player.y - enemy.y);
       if (distance <= 145 + player.radius) player.takeDamage(enemy.damage);
-    } else if (name === "impact" && enemy.type === "boss" && enemy.animator.name === "slam") {
-      const distance = Math.hypot(player.x - enemy.x, player.y - enemy.y);
-      if (distance <= 190 + player.radius) player.takeDamage(enemy.damage * 1.5);
     }
   }
 
@@ -136,4 +160,5 @@ export class EnemyManager {
   get count() { return this.#enemies.length; }
   get kills() { return this.#kills; }
   get elapsed() { return this.#elapsed; }
+  get wave() { return this.#wave; }
 }
