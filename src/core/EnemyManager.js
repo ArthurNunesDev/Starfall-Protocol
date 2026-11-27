@@ -132,6 +132,7 @@ export class EnemyManager {
     for (const enemy of this.#enemies) enemy.render(ctx);
   }
 
+  get targets() { return this.#enemies.filter((enemy) => !enemy.dead && !enemy.removed); }
   get count() { return this.#enemies.length; }
   get kills() { return this.#kills; }
   get elapsed() { return this.#elapsed; }
