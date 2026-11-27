@@ -38,6 +38,7 @@ export class MainMenu {
     }
 
     if (actionButton?.dataset.action === "restart-game") {
+      this.#screenManager.show("game-screen");
       this.#game.restart();
       return;
     }
@@ -68,7 +69,8 @@ export class MainMenu {
 
     const screenButton = event.target.closest("[data-screen]");
     if (screenButton) {
-      if (screenButton.dataset.screen === "main-menu" && this.#screenManager.currentScreen === "game-screen") {
+      if (screenButton.dataset.screen === "main-menu"
+        && ["game-screen", "death-screen"].includes(this.#screenManager.currentScreen)) {
         this.#game.endSession();
       }
       if (screenButton.dataset.screen === "main-menu") this.#refreshArchives();
