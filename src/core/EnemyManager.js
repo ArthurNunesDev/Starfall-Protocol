@@ -40,7 +40,7 @@ export class EnemyManager {
     this.#elapsed = Math.max(0, elapsedTime);
     this.#wave = Math.min(MAX_WAVES, Math.floor(this.#elapsed / WAVE_DURATION) + 1);
 
-    if (this.#wave <= MAX_WAVES) {
+    if (this.#wave <= MAX_WAVES && this.#elapsed < MAX_WAVES * WAVE_DURATION) {
       this.#spawnTimer -= deltaTime;
       if (this.#spawnTimer <= 0 && this.#enemies.length < MAX_ENEMIES) {
         this.#spawnGroup(player, world);
