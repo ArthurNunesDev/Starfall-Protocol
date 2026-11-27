@@ -65,8 +65,9 @@ export class AbilitySystem {
     this.#updateEffects(dt);
 
     if (wave !== this.#lastWave) {
+      const wavesToGrant = this.#lastWave === 0 ? wave : Math.max(0, wave - this.#lastWave);
       this.#lastWave = wave;
-      player.addShield(25);
+      if (wavesToGrant > 0) player.addShield(25 * wavesToGrant);
     }
 
     if (player.health > 0 && player.health < EMERGENCY_HEALTH_THRESHOLD
