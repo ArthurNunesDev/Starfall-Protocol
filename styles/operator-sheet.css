@@ -19,7 +19,7 @@
 }
 .operator-sheet *, .operator-sheet *::before, .operator-sheet *::after { box-sizing: border-box; }
 .operator-sheet__header { display: flex; align-items: center; gap: 18px; padding-bottom: 20px; border-bottom: 1px solid var(--sheet-line); }
-.operator-sheet__portrait { display: block; width: 88px; height: 88px; flex: 0 0 88px; image-rendering: pixelated; background: var(--sheet-panel) url("../assets/sprites/soldier.webp") 0 -384px / 1344px 768px no-repeat; border: 1px solid var(--sheet-line); }
+.operator-sheet__portrait { display: block; width: 88px; height: 88px; flex: 0 0 88px; image-rendering: pixelated; background: var(--sheet-panel) url("../assets/sprites/soldier.webp") 0 -352px / 1232px 704px no-repeat; border: 1px solid var(--sheet-line); }
 .operator-sheet__name { margin: 0; color: #f0f8ff; font: 600 clamp(1.8rem, 4vw, 2.5rem)/1 "Barlow Condensed", sans-serif; letter-spacing: .1em; }
 .operator-sheet__class { margin: 6px 0; color: var(--sheet-cyan); font-size: .72rem; font-weight: 700; letter-spacing: .2em; }
 .operator-sheet__summary, .operator-sheet__description { margin: 0; color: var(--sheet-muted); font-size: .9rem; line-height: 1.5; }
@@ -58,7 +58,7 @@
 @media (max-width: 480px) {
   .operator-sheet { padding: 15px; }
   .operator-sheet__header { align-items: flex-start; gap: 12px; }
-  .operator-sheet__portrait { width: 66px; height: 66px; flex-basis: 66px; background-position: 0 -384px; }
+  .operator-sheet__portrait { width: 66px; height: 66px; flex-basis: 66px; background-position: 0 -264px; background-size: 924px 528px; }
   .operator-sheet__stats { grid-template-columns: minmax(0, 1fr) auto; gap: 5px 8px; font-size: .82rem; }
   .operator-ability { padding: 11px; }
 }
