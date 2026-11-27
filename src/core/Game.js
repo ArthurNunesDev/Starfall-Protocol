@@ -128,7 +128,10 @@ export class Game {
       this.#loop.stop();
       this.#input.detach();
       this.#session.clear();
-      if (this.#gameOverOverlay) this.#gameOverOverlay.hidden = false;
+      if (this.#gameOverOverlay) {
+        this.#gameOverOverlay.hidden = false;
+        this.#gameOverOverlay.querySelector('[data-action="restart-game"]')?.focus();
+      }
       return;
     }
 
