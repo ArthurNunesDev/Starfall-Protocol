@@ -55,7 +55,7 @@ export class Renderer {
     enemies?.render(ctx);
     abilities?.render(ctx);
     weapons?.render(ctx);
-    player.render(ctx);
+    player.render(ctx, abilities?.weaponVisualState ?? null);
     ctx.restore();
     this.#renderHud({ elapsedTime, enemyCount, kills, wave, player, abilities: abilities?.hudState ?? null });
   }
@@ -76,7 +76,7 @@ export class Renderer {
     ctx.textAlign = "right";
     ctx.fillStyle = "#a9bdcf";
     ctx.fillText(`WAVE  ${wave} / 100   //   ${minutes}:${seconds}`, this.#width - 20, 30);
-    ctx.fillText(`AMEAÇAS  ${enemyCount}   //   ELIMINAÇÕES  ${kills}`, this.#width - 20, 49);
+    ctx.fillText(`AMEAÇAS  ${enemyCount}   //   ELIMINAÇÕES  ${kills}`, this.#width - 20, 70);
     this.#renderAbilityHud(abilities);
     ctx.restore();
   }
