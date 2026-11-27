@@ -1,0 +1,64 @@
+/* Ficha detalhada do operador na seleção de personagens. */
+.operator-sheet {
+  --sheet-bg: rgba(7, 16, 31, .96);
+  --sheet-panel: rgba(15, 31, 49, .92);
+  --sheet-line: rgba(105, 229, 245, .2);
+  --sheet-text: #e2edf7;
+  --sheet-muted: #91a7ba;
+  --sheet-cyan: #69e5f5;
+  --sheet-orange: #ffad72;
+  --sheet-gold: #e8c078;
+  --sheet-green: #75dfc1;
+  --sheet-purple: #bca5ff;
+  --sheet-red: #ff5e68;
+  padding: clamp(18px, 3vw, 28px);
+  border: 1px solid var(--sheet-line);
+  background: linear-gradient(145deg, rgba(8, 20, 36, .98), rgba(4, 11, 23, .98));
+  color: var(--sheet-text);
+  text-align: left;
+}
+.operator-sheet *, .operator-sheet *::before, .operator-sheet *::after { box-sizing: border-box; }
+.operator-sheet__header { display: flex; align-items: center; gap: 18px; padding-bottom: 20px; border-bottom: 1px solid var(--sheet-line); }
+.operator-sheet__portrait { width: 88px; height: 88px; flex: 0 0 88px; object-fit: contain; image-rendering: pixelated; background: var(--sheet-panel); border: 1px solid var(--sheet-line); }
+.operator-sheet__name { margin: 0; color: #f0f8ff; font: 600 clamp(1.8rem, 4vw, 2.5rem)/1 "Barlow Condensed", sans-serif; letter-spacing: .1em; }
+.operator-sheet__class { margin: 6px 0; color: var(--sheet-cyan); font-size: .72rem; font-weight: 700; letter-spacing: .2em; }
+.operator-sheet__summary, .operator-sheet__description { margin: 0; color: var(--sheet-muted); font-size: .9rem; line-height: 1.5; }
+.operator-sheet__body { display: grid; grid-template-columns: minmax(230px, .9fr) minmax(0, 1.5fr); gap: 22px; align-items: start; padding-top: 20px; }
+.operator-sheet__column { display: flex; min-width: 0; flex-direction: column; gap: 20px; }
+.operator-sheet__section { min-width: 0; }
+.operator-sheet__section-title { margin: 0 0 10px; color: #e9f5fc; font: 600 1.05rem "Barlow Condensed", sans-serif; letter-spacing: .15em; text-transform: uppercase; }
+.operator-sheet__stats { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 14px; margin: 0; font-size: .88rem; }
+.operator-sheet__stats dt { color: var(--sheet-muted); }
+.operator-sheet__stats dd { margin: 0; color: #e6f2fa; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.operator-sheet__weapon-name { margin: 0 0 5px; color: #e8f6fc; font-size: .98rem; }
+.operator-sheet__description { margin-bottom: 10px; }
+.operator-ability { --ability-color: var(--sheet-cyan); margin-top: 9px; padding: 13px 14px; border: 1px solid rgba(105, 229, 245, .12); border-left: 3px solid var(--ability-color); background: var(--sheet-panel); }
+.operator-ability--ofensiva { --ability-color: var(--sheet-orange); }
+.operator-ability--defensiva { --ability-color: var(--sheet-gold); }
+.operator-ability--mobilidade { --ability-color: var(--sheet-green); }
+.operator-ability--passiva { --ability-color: var(--sheet-purple); }
+.operator-ability--ultimate { --ability-color: var(--sheet-red); border-color: rgba(255, 94, 104, .28); background: linear-gradient(160deg, rgba(90, 25, 37, .2), var(--sheet-panel) 62%); }
+.operator-ability__header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+.operator-ability__name { margin: 0; color: #f0f7fc; font-size: 1rem; }
+.operator-ability__category { color: var(--ability-color); font-size: .75rem; }
+.operator-ability__key { min-width: 27px; margin-left: auto; padding: 2px 8px; border: 1px solid var(--sheet-line); border-bottom-width: 2px; border-radius: 3px; background: var(--sheet-bg); color: var(--sheet-cyan); font: 600 .8rem "Rajdhani", sans-serif; text-align: center; }
+.operator-ability__description { margin: 7px 0 10px; color: var(--sheet-muted); font-size: .86rem; line-height: 1.5; }
+.operator-charge { margin: 14px 0 17px; }
+.operator-charge__track { display: flex; height: 26px; overflow: hidden; border: 1px solid var(--sheet-line); }
+.operator-charge__phase { display: grid; min-width: 0; place-items: center; color: #06101d; font-size: .73rem; font-weight: 700; white-space: nowrap; }
+.operator-charge__phase--normal { background: var(--sheet-cyan); }
+.operator-charge__phase--red { background: var(--sheet-red); color: #fff; }
+.operator-charge__scale { display: flex; justify-content: space-between; margin-top: 4px; color: var(--sheet-muted); font-size: .72rem; }
+.operator-buff { margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(255, 94, 104, .45); }
+.operator-buff__title { margin: 0 0 4px; color: var(--sheet-red); font-size: .95rem; }
+.operator-buff__trigger, .operator-buff__end { margin: 4px 0 9px; color: var(--sheet-muted); font-size: .83rem; line-height: 1.45; }
+@media (max-width: 760px) {
+  .operator-sheet__body { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .operator-sheet { padding: 15px; }
+  .operator-sheet__header { align-items: flex-start; gap: 12px; }
+  .operator-sheet__portrait { width: 66px; height: 66px; flex-basis: 66px; }
+  .operator-sheet__stats { grid-template-columns: minmax(0, 1fr) auto; gap: 5px 8px; font-size: .82rem; }
+  .operator-ability { padding: 11px; }
+}
