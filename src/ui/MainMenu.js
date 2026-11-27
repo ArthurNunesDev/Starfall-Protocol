@@ -1,12 +1,18 @@
+import { OPERATORS } from "../data/operators.js";
+import { OperatorSheet } from "./OperatorSheet.js";
+
 export class MainMenu {
   #screenManager;
   #game;
   #profile;
+  #operatorSheet;
 
   constructor(screenManager, game, profile) {
     this.#screenManager = screenManager;
     this.#game = game;
     this.#profile = profile;
+    const sheetContainer = document.querySelector("#operator-sheet");
+    if (sheetContainer instanceof HTMLElement) this.#operatorSheet = new OperatorSheet(sheetContainer);
     document.addEventListener("click", this.#handleClick);
     document.addEventListener("keydown", this.#handleKeydown);
     document.addEventListener("fullscreenchange", this.#handleFullscreenChange);
@@ -134,6 +140,10 @@ export class MainMenu {
       if (selection) selection.textContent = isSelected ? "SELECIONADO" : "SELECIONAR";
     }
     if (startButton) startButton.disabled = !profile.unlockedCharacters.includes(profile.selectedCharacter);
+
+    const selectedOperator = OPERATORS.find((operator) => operator.id === profile.selectedCharacter);
+    if (selectedOperator) this.#operatorSheet?.show(selectedOperator);
+    else this.#operatorSheet?.clear();
   }
 
   #refreshArchives() {
