@@ -20,6 +20,7 @@ export class EnemyManager {
   #elapsed = 0;
   #wave = 1;
   #spawnTimer = 0;
+  #announcementTimer = 0;
   #kills = 0;
 
   constructor(assets) {
@@ -36,11 +37,19 @@ export class EnemyManager {
   // A primeira leva também é controlada pelo relógio de waves.
   spawnInitialWave() {
     this.#spawnTimer = 0;
+    this.#announcementTimer = 3;
   }
 
   update(player, deltaTime, world, elapsedTime = this.#elapsed + deltaTime) {
     this.#elapsed = Math.max(0, elapsedTime);
+    const previousWave = this.#wave;
     this.#wave = Math.min(MAX_WAVES, Math.floor(this.#elapsed / WAVE_DURATION) + 1);
+
+    if (this.#wave !== previousWave) {
+      this.#spawnTimer = 0;
+      this.#announcementTimer = 3;
+    }
+    this.#announcementTimer = Math.max(0, this.#announcementTimer - deltaTime);
 
     if (this.#wave <= MAX_WAVES && this.#elapsed < MAX_WAVES * WAVE_DURATION) {
       this.#spawnTimer -= deltaTime;
@@ -183,4 +192,8 @@ export class EnemyManager {
   get kills() { return this.#kills; }
   get elapsed() { return this.#elapsed; }
   get wave() { return this.#wave; }
+  get waveTimeRemaining() {
+    return WAVE_DURATION - (this.#elapsed % WAVE_DURATION);
+  }
+  get announcementRemaining() { return this.#announcementTimer; }
 }
