@@ -106,8 +106,9 @@ Acesse `http://localhost:8000`.
 - **Crawler:** movimentação rápida e ataques corpo a corpo em intervalos menores.
 - **Spitter:** mantém distância do operador e dispara projéteis direcionais.
 - **Bloater:** aproximação seguida de explosão em área.
-- **Boss:** surge após 60 segundos, possui vida ampliada, fase agressiva abaixo de 50% de vida, ataques corpo a corpo, golpe em área e rajada de projéteis.
-- Hordas adicionam inimigos em intervalos progressivamente menores, respeitando o limite de entidades ativas.
+- **Waves:** 100 waves com duração fixa de 45 segundos cada. A próxima wave começa automaticamente, sem depender da eliminação de todos os inimigos.
+- **Desbloqueio de mobs:** wave 1 começa apenas com Brute; Spitter entra na 15; Crawler na 35; Bloater na 50. O boss fica desativado nesta etapa.
+- **Escalonamento:** os grupos aumentam de tamanho a cada 10 waves e o intervalo entre spawns diminui progressivamente, de 8,5 segundos até 1,5 segundo, com limite de 70 inimigos ativos.
 - O operador possui 100 pontos de integridade, janela curta de invulnerabilidade após receber dano, HUD de vida/tempo/ameaças/eliminação e tela de derrota com reinício.
 - O Fuzil de Pulso dispara automaticamente contra o inimigo mais próximo, com projéteis físicos, alcance, cadência e dano configurados. Eliminações são registradas no perfil e liberam o Arsenal.
 - Os atlases JSON controlam os eventos de impacto das animações; as spritesheets são carregadas e validadas antes da partida.
