@@ -175,7 +175,7 @@ export class Enemy {
     drawEnemyFrame(ctx, this.assets, this.animator, this.x, this.y, this.scale);
     ctx.globalAlpha = 1;
 
-    if (!this.dead) {
+    if (this.health < this.maxHealth && !this.dead) {
       const width = this.type === "boss" ? 92 : 48;
       const ratio = Math.max(0, Math.min(1, this.health / this.maxHealth));
       const barY = this.y - this.radius - 12;
