@@ -1,10 +1,16 @@
-import { directionFromVector, drawSoldierFrame, SpriteAnimator } from "./SoldierSprite.js";
+import { directionAngle, directionFromAngle, drawSoldierFrame, SpriteAnimator } from "./SoldierSprite.js";
 
 const SPEED = 250;
 const RADIUS = 15;
 const SPRITE_SCALE = 1.5;
 const MAX_HEALTH = 100;
 const DAMAGE_COOLDOWN = 0.55;
+const TURN_RESPONSE = 16;
+const SIXTEEN_WAY_STEP = Math.PI / 8;
+
+function normalizeAngle(angle) {
+  return Math.atan2(Math.sin(angle), Math.cos(angle));
+}
 
 export class Player {
   x;
@@ -12,6 +18,7 @@ export class Player {
   #spriteAssets = null;
   #animator = null;
   #damageCooldown = 0;
+  #facingAngle = Math.PI / 2;
   health = MAX_HEALTH;
   radius = RADIUS;
   damageFlash = 0;
@@ -26,10 +33,22 @@ export class Player {
   setSpriteAssets(assets) {
     this.#spriteAssets = assets;
     this.#animator = assets ? new SpriteAnimator(assets.atlas) : null;
+    this.#syncSpriteDirection();
   }
 
-  playAnimation(name) {
-    return this.#animator?.request(name) ?? false;
+  setFacingAngle(angle, deltaTime) {
+    if (!Number.isFinite(angle)) return;
+    const targetAngle = Math.round(angle / SIXTEEN_WAY_STEP) * SIXTEEN_WAY_STEP;
+    const difference = normalizeAngle(targetAngle - this.#facingAngle);
+    const response = 1 - Math.exp(-TURN_RESPONSE * Math.max(0, deltaTime));
+    this.#facingAngle = normalizeAngle(this.#facingAngle + difference * response);
+    this.#syncSpriteDirection();
+  }
+
+  #syncSpriteDirection() {
+    if (!this.#animator) return;
+    this.#animator.direction = directionFromAngle(this.#facingAngle);
+    this.#animator.rotation = normalizeAngle(this.#facingAngle - directionAngle(this.#animator.direction));
   }
 
   takeDamage(amount) {
@@ -55,8 +74,8 @@ export class Player {
       dy /= length;
       this.x = Math.max(RADIUS, Math.min(world.width - RADIUS, this.x + dx * SPEED * deltaTime));
       this.y = Math.max(RADIUS, Math.min(world.height - RADIUS, this.y + dy * SPEED * deltaTime));
+      this.setFacingAngle(Math.atan2(dy, dx), deltaTime);
       if (this.#animator) {
-        this.#animator.direction = directionFromVector(dx, dy, this.#animator.direction);
         this.#animator.speed = 1.15;
         this.#animator.request("run");
       }
@@ -67,40 +86,43 @@ export class Player {
   }
 
   render(ctx) {
+    ctx.save();
     if (this.damageFlash > 0) ctx.globalAlpha = 0.55;
     if (this.#spriteAssets && this.#animator) {
       drawSoldierFrame(ctx, this.#spriteAssets, this.#animator, this.x, this.y, SPRITE_SCALE);
-      ctx.globalAlpha = 1;
-      return;
+    } else {
+      ctx.translate(Math.round(this.x), Math.round(this.y));
+      ctx.fillStyle = "rgba(0, 0, 0, 0.42)";
+      ctx.fillRect(-10, 11, 20, 7);
+      ctx.shadowColor = "rgba(72, 218, 255, 0.65)";
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = "#42bfd8";
+      ctx.beginPath();
+      ctx.moveTo(0, -18);
+      ctx.lineTo(11, 7);
+      ctx.lineTo(6, 13);
+      ctx.lineTo(-6, 13);
+      ctx.lineTo(-11, 7);
+      ctx.closePath();
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#d9fbff";
+      ctx.fillRect(-3, -7, 6, 10);
     }
 
-    ctx.save();
     ctx.translate(Math.round(this.x), Math.round(this.y));
-    ctx.fillStyle = "rgba(0, 0, 0, 0.42)";
-    ctx.fillRect(-10, 11, 20, 7);
-    ctx.shadowColor = "rgba(72, 218, 255, 0.65)";
-    ctx.shadowBlur = 18;
-    ctx.fillStyle = "#42bfd8";
-    ctx.beginPath();
-    ctx.moveTo(0, -18);
-    ctx.lineTo(11, 7);
-    ctx.lineTo(6, 13);
-    ctx.lineTo(-6, 13);
-    ctx.lineTo(-11, 7);
-    ctx.closePath();
-    ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = "#d9fbff";
-    ctx.fillRect(-3, -7, 6, 10);
-    ctx.fillStyle = "#12364a";
-    ctx.fillRect(-2, -5, 4, 6);
-    ctx.fillStyle = "#f0b96e";
-    ctx.fillRect(-2, 13, 4, 4);
-    ctx.fillStyle = "#a5f4ff";
-    ctx.fillRect(-15, 5, 5, 3);
-    ctx.fillRect(10, 5, 5, 3);
+    ctx.rotate(this.#facingAngle);
+    ctx.shadowColor = "rgba(68, 220, 255, 0.7)";
+    ctx.shadowBlur = 8;
+    ctx.fillStyle = "#263f55";
+    ctx.fillRect(1, -5, 22, 10);
+    ctx.fillStyle = "#8deeff";
+    ctx.fillRect(10, -3, 15, 6);
+    ctx.fillStyle = "#d7faff";
+    ctx.fillRect(22, -2, 7, 4);
+    ctx.fillStyle = "#172b3e";
+    ctx.fillRect(5, 4, 7, 5);
     ctx.restore();
-    ctx.globalAlpha = 1;
   }
 }
 
