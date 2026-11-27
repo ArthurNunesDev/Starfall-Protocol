@@ -189,11 +189,20 @@ button.character-card:hover,button.character-card:focus-visible,.character-card.
 /* Sprite do operador na seleção de personagens. */
 .character-card__sprite{display:block;width:96px;height:96px;flex:0 0 96px;background-image:url("../assets/sprites/soldier.webp");background-repeat:no-repeat;background-size:1344px 768px;background-position:0 -384px;image-rendering:pixelated;filter:drop-shadow(0 0 9px rgba(54,198,240,.28))}
 
-/* HUD de combate e estado de derrota */
-.game-over-overlay{position:absolute;z-index:30;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:28px;background:rgba(3,8,18,.9);text-align:center;backdrop-filter:blur(8px)}
-.game-over-overlay[hidden]{display:none}
-.game-over-overlay .eyebrow{margin:0;color:#f17b83}
-.game-over-overlay h3{margin:0;color:#f2f7ff;font-family:"Barlow Condensed",sans-serif;font-size:clamp(2.2rem,6vw,4rem);letter-spacing:.12em}
-.game-over-overlay>p:not(.eyebrow){max-width:390px;margin:0 0 12px;color:#a9bac9;line-height:1.5}
-.game-over-overlay .menu-button{width:min(100%,300px);grid-template-columns:1fr 24px}
-.game-over-overlay .back-button{margin-top:0}
+/* Tela de derrota */
+.death-screen{align-items:center;justify-content:center;min-height:0}
+.death-panel{position:relative;width:min(100%,650px);padding:clamp(30px,6vw,64px);border:1px solid rgba(241,123,131,.28);background:linear-gradient(145deg,rgba(23,17,31,.94),rgba(5,11,24,.96));box-shadow:0 0 70px rgba(153,44,70,.12),inset 0 0 45px rgba(153,44,70,.06);text-align:center;animation:menu-arrive .55s ease both}
+.death-panel::before,.death-panel::after{position:absolute;width:22px;height:22px;border-color:rgba(241,123,131,.72);border-style:solid;content:""}
+.death-panel::before{top:-1px;left:-1px;border-width:1px 0 0 1px}
+.death-panel::after{right:-1px;bottom:-1px;border-width:0 1px 1px 0}
+.death-symbol{display:grid;width:76px;height:76px;place-items:center;margin:0 auto 28px;border:1px solid rgba(241,123,131,.55);transform:rotate(45deg);box-shadow:0 0 30px rgba(241,91,111,.13),inset 0 0 20px rgba(241,91,111,.08)}
+.death-symbol span{color:#f17b83;font-family:"Barlow Condensed",sans-serif;font-size:3.5rem;font-weight:300;line-height:1;transform:rotate(-45deg)}
+.death-panel .eyebrow{margin-bottom:12px;color:#f17b83}
+.death-title{margin:0;color:#f3f6fc;font-family:"Barlow Condensed",sans-serif;font-size:clamp(2.7rem,7vw,4.8rem);font-weight:600;letter-spacing:.1em;line-height:1}
+.death-description{max-width:420px;margin:16px auto 24px;color:#a9bac9;font-size:1rem;line-height:1.55}
+.death-status{display:flex;align-items:center;justify-content:center;gap:9px;padding:12px;border-top:1px solid rgba(241,123,131,.16);border-bottom:1px solid rgba(241,123,131,.16);color:#c17d87;font-size:.62rem;letter-spacing:.16em}
+.death-status span{width:6px;height:6px;border-radius:50%;background:#f17b83;box-shadow:0 0 10px #f17b83}
+.death-actions{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:28px}
+.death-restart-button{width:min(100%,330px);grid-template-columns:1fr 24px}
+.death-actions .back-button{margin-top:5px}
+@media(max-width:640px){.death-panel{padding:32px 20px}.death-symbol{width:62px;height:62px;margin-bottom:24px}.death-symbol span{font-size:3rem}.death-status{font-size:.53rem;letter-spacing:.1em}}
