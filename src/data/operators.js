@@ -1,0 +1,147 @@
+const stat = (label, value) => Object.freeze({ label, value });
+
+export const OPERATORS = Object.freeze([
+  Object.freeze({
+    id: "operator-01",
+    name: "Operador",
+    className: "Assalto",
+    summary: "Combatente de linha de frente. Usa o Fuzil de Pulso e habilidades de controle, mobilidade e alto dano concentrado.",
+    portrait: "./assets/sprites/soldier.webp",
+    attributes: Object.freeze([
+      stat("Integridade máxima", "10"),
+      stat("Velocidade de movimento", "250 unidades/s"),
+      stat("Escudo por wave", "+25"),
+      stat("Acúmulo de escudo", "Sem limite"),
+    ]),
+    weapon: Object.freeze({
+      name: "Fuzil de Pulso",
+      description: "Disparo automático. Prioriza o inimigo sob o cursor quando está dentro do alcance; caso contrário, mira no inimigo válido mais próximo.",
+      damage: 1,
+      interval: 1.5,
+      targetRange: 300,
+      projectileRange: 340,
+    }),
+    abilities: Object.freeze([
+      Object.freeze({
+        id: "salto-de-fenda",
+        name: "Salto de Fenda",
+        category: "mobilidade",
+        key: "Q",
+        description: "Teletransporta o operador em direção ao cursor, respeitando a distância máxima. O deslocamento deixa um rastro energético que causa dano aos inimigos que o atravessarem.",
+        stats: Object.freeze([
+          stat("Distância máxima", "250 unidades"),
+          stat("Cargas", "2"),
+          stat("Recuperação", "1 carga a cada 5 s"),
+          stat("Dano do rastro", "2 por segundo"),
+          stat("Duração do rastro", "2 s"),
+        ]),
+      }),
+      Object.freeze({
+        id: "onda-de-pulso",
+        name: "Onda de Pulso",
+        category: "ofensiva",
+        key: "Z",
+        description: "Libera uma explosão circular ao redor do operador, causando dano e empurrando os inimigos próximos. Especialmente útil para afastar Crawlers.",
+        stats: Object.freeze([
+          stat("Dano", "5"),
+          stat("Raio", "160 unidades"),
+          stat("Força de empurrão", "120 unidades"),
+          stat("Recarga", "8 s"),
+        ]),
+      }),
+      Object.freeze({
+        id: "sobrecarga",
+        name: "Sobrecarga",
+        category: "ofensiva",
+        key: "X",
+        description: "Sobrecarrega temporariamente o Fuzil de Pulso, fazendo a arma disparar duas vezes mais rápido.",
+        stats: Object.freeze([
+          stat("Cadência", "2× mais rápida"),
+          stat("Duração", "8 s"),
+          stat("Recarga", "20 s"),
+        ]),
+      }),
+      Object.freeze({
+        id: "drone-sentinela",
+        name: "Drone Sentinela",
+        category: "ofensiva",
+        key: "C",
+        description: "Implanta drones temporários que orbitam o operador e atacam inimigos automaticamente. É possível manter até três drones ativos simultaneamente.",
+        stats: Object.freeze([
+          stat("Dano por disparo", "3"),
+          stat("Intervalo entre disparos", "1 s"),
+          stat("Drones simultâneos", "Até 3"),
+          stat("Duração", "10 s"),
+          stat("Recarga", "12 s"),
+        ]),
+      }),
+    ]),
+    ultimate: Object.freeze({
+      id: "laser-gigante",
+      name: "Laser Gigante",
+      key: "V",
+      description: "Carrega e dispara um laser de grande potência. A mira prioriza o inimigo sob o cursor, independentemente da distância. Se nenhum inimigo estiver sob o cursor, o laser seleciona o inimigo com mais vida do mapa. Durante a carga, o Fuzil de Pulso não dispara.",
+      chargeMax: 10,
+      phases: Object.freeze([
+        Object.freeze({ from: 0, to: 5, label: "Carga normal", color: "normal" }),
+        Object.freeze({ from: 5, to: 10, label: "Laser vermelho", color: "red" }),
+      ]),
+      stats: Object.freeze([
+        stat("Dano", "20 + 10 por segundo de carga"),
+        stat("Dano mínimo", "20"),
+        stat("Dano máximo", "120"),
+        stat("Carga máxima", "10 s"),
+        stat("Alcance", "Ilimitado"),
+        stat("Seleção de alvo", "Inimigo sob o cursor; sem alvo, inimigo com mais vida"),
+        stat("Arma durante a carga", "Fuzil de Pulso não dispara"),
+        stat("Recarga", "50 s"),
+      ]),
+      buff: Object.freeze({
+        trigger: "Carga superior a 5 s",
+        duration: 30,
+        effects: Object.freeze([
+          stat("Dano da arma", "+25%"),
+          stat("Cadência da arma", "+25% mais rápida"),
+          stat("Visual da arma", "Vermelho"),
+        ]),
+        end: "Ao terminar os 30 segundos, o visual, o dano e a cadência do Fuzil de Pulso retornam aos valores normais.",
+      }),
+    }),
+    passives: Object.freeze([
+      Object.freeze({
+        id: "escudo-de-energia",
+        name: "Escudo de Energia",
+        category: "defensiva",
+        description: "Concede escudo automaticamente no início de cada wave. O escudo recebido se acumula e não possui limite máximo.",
+        stats: Object.freeze([
+          stat("Escudo por wave", "+25"),
+          stat("Limite acumulado", "Sem limite"),
+          stat("Ativação", "Automática no início de cada wave"),
+        ]),
+      }),
+      Object.freeze({
+        id: "nucleo-instavel",
+        name: "Núcleo Instável",
+        category: "passiva",
+        description: "Inimigos eliminados têm chance de explodir, causando dano em área aos inimigos próximos.",
+        stats: Object.freeze([
+          stat("Chance de explosão", "10%"),
+          stat("Raio", "80 unidades"),
+          stat("Dano", "3"),
+        ]),
+      }),
+      Object.freeze({
+        id: "ultimo-recurso",
+        name: "Último Recurso",
+        category: "passiva",
+        description: "Quando a integridade fica abaixo de 10%, o operador recebe um escudo emergencial temporário. O efeito pode ocorrer uma vez por wave.",
+        stats: Object.freeze([
+          stat("Gatilho", "Vida abaixo de 10%"),
+          stat("Escudo concedido", "50"),
+          stat("Duração", "5 s"),
+          stat("Usos", "1 por wave"),
+        ]),
+      }),
+    ]),
+  }),
+]);
