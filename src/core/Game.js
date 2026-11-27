@@ -172,6 +172,8 @@ export class Game {
       enemyCount: this.#enemies?.count ?? 0,
       kills: this.#enemies?.kills ?? 0,
       wave: this.#enemies?.wave ?? Math.min(100, Math.floor(this.#elapsedTime / 45) + 1),
+      waveTimeRemaining: this.#enemies?.waveTimeRemaining ?? Math.max(0, 45 - (this.#elapsedTime % 45)),
+      waveAnnouncementRemaining: this.#enemies?.announcementRemaining ?? 0,
     });
   }
 
