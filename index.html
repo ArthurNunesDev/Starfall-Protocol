@@ -182,7 +182,14 @@
         <button class="game-exit-button" type="button" data-screen="main-menu">ABORTAR TESTE <span aria-hidden="true">×</span></button>
       </div>
       <div class="game-viewport">
-        <canvas id="game-canvas" aria-label="Arena de teste. Use W, A, S, D ou as setas do teclado para movimentar o operador."></canvas>
+        <canvas id="game-canvas" aria-label="Arena de combate. Use W, A, S, D ou as setas do teclado para movimentar o operador e desviar dos ataques."></canvas>
+        <div class="game-over-overlay" id="game-over-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="game-over-title">
+          <p class="eyebrow">PROTOCOLO INTERROMPIDO</p>
+          <h3 id="game-over-title">OPERADOR ELIMINADO</h3>
+          <p>A integridade chegou a zero. Reorganize sua estratégia e tente novamente.</p>
+          <button class="menu-button menu-button--primary" type="button" data-action="restart-game">TENTAR NOVAMENTE <span class="menu-button__arrow" aria-hidden="true">↻</span></button>
+          <button class="back-button" type="button" data-screen="main-menu">VOLTAR AO MENU</button>
+        </div>
         <button class="game-fullscreen-button" type="button" data-action="game-fullscreen" aria-label="Expandir mapa para tela cheia">TELA CHEIA <span aria-hidden="true">⛶</span></button>
         <div class="game-viewport__corner game-viewport__corner--tl" aria-hidden="true"></div>
         <div class="game-viewport__corner game-viewport__corner--tr" aria-hidden="true"></div>
