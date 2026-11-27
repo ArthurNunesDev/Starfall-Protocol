@@ -74,7 +74,6 @@ export class Player {
       dy /= length;
       this.x = Math.max(RADIUS, Math.min(world.width - RADIUS, this.x + dx * SPEED * deltaTime));
       this.y = Math.max(RADIUS, Math.min(world.height - RADIUS, this.y + dy * SPEED * deltaTime));
-      this.setFacingAngle(Math.atan2(dy, dx), deltaTime);
       if (this.#animator) {
         this.#animator.speed = 1.15;
         this.#animator.request("run");
