@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles/main.css">
   <link rel="stylesheet" href="./styles/menu.css">
+  <link rel="stylesheet" href="./styles/operator-sheet.css">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -85,7 +86,7 @@
       </div>
     </section>
 
-    <section class="screen sub-screen" id="character-select-screen" aria-labelledby="character-select-title" hidden>
+    <section class="screen sub-screen character-select-screen" id="character-select-screen" aria-labelledby="character-select-title" hidden>
       <div class="panel-content character-panel">
         <p class="eyebrow">CENTRAL DE OPERAÇÕES // SELEÇÃO</p>
         <h2 class="screen-title" id="character-select-title">ESCOLHA SEU OPERADOR</h2>
@@ -94,8 +95,8 @@
           <button class="character-card is-selected" type="button" data-character-id="operator-01" aria-pressed="true">
             <span class="character-card__status">DESBLOQUEADO</span>
             <span class="character-card__sprite" aria-hidden="true"></span>
-            <strong>OPERADOR 01</strong>
-            <small>OPERADOR INICIAL</small>
+            <strong>OPERADOR</strong>
+            <small>CLASSE ASSALTO</small>
             <span class="character-card__selection">SELECIONADO</span>
           </button>
           <div class="character-card character-card--locked" aria-disabled="true">
@@ -106,6 +107,7 @@
             <span class="character-card__selection">CUMPRA OBJETIVOS PARA DESBLOQUEAR</span>
           </div>
         </div>
+        <div id="operator-sheet" class="operator-sheet-host" aria-live="polite"></div>
         <div class="character-actions">
           <button class="menu-button menu-button--primary character-start-button" type="button" data-action="start-selected-game">
             <span>INICIAR COM OPERADOR SELECIONADO</span><span class="menu-button__arrow" aria-hidden="true">↗</span>
