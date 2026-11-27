@@ -12,7 +12,7 @@ if (!(canvas instanceof HTMLCanvasElement)) {
 
 const screenManager = new ScreenManager();
 const playerProfile = new PlayerProfile();
-const game = new Game(canvas, playerProfile);
+const game = new Game(canvas, playerProfile, () => screenManager.show("death-screen"));
 new MainMenu(screenManager, game, playerProfile);
 new ParallaxBackground();
 
