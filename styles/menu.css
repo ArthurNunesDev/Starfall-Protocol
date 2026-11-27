@@ -188,3 +188,12 @@ button.character-card:hover,button.character-card:focus-visible,.character-card.
 
 /* Sprite do operador na seleção de personagens. */
 .character-card__sprite{display:block;width:96px;height:96px;flex:0 0 96px;background-image:url("../assets/sprites/soldier.webp");background-repeat:no-repeat;background-size:1344px 768px;background-position:0 -384px;image-rendering:pixelated;filter:drop-shadow(0 0 9px rgba(54,198,240,.28))}
+
+/* HUD de combate e estado de derrota */
+.game-over-overlay{position:absolute;z-index:30;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:28px;background:rgba(3,8,18,.9);text-align:center;backdrop-filter:blur(8px)}
+.game-over-overlay[hidden]{display:none}
+.game-over-overlay .eyebrow{margin:0;color:#f17b83}
+.game-over-overlay h3{margin:0;color:#f2f7ff;font-family:"Barlow Condensed",sans-serif;font-size:clamp(2.2rem,6vw,4rem);letter-spacing:.12em}
+.game-over-overlay>p:not(.eyebrow){max-width:390px;margin:0 0 12px;color:#a9bac9;line-height:1.5}
+.game-over-overlay .menu-button{width:min(100%,300px);grid-template-columns:1fr 24px}
+.game-over-overlay .back-button{margin-top:0}
