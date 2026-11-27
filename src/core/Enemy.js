@@ -33,11 +33,16 @@ export class Enemy {
     this.attackLocked = false;
     this.phaseTwo = false;
     this.hitFlash = 0;
+    this.lastDamage = 0;
+    this.damageTextTimer = 0;
+    this.damageTextOffset = 0;
   }
 
   update(target, deltaTime, world) {
     if (this.removed) return [];
     this.hitFlash = Math.max(0, this.hitFlash - deltaTime);
+    this.damageTextTimer = Math.max(0, this.damageTextTimer - deltaTime);
+    if (this.damageTextTimer > 0) this.damageTextOffset += deltaTime * 24;
 
     if (this.dead) {
       this.animator.update(deltaTime);
@@ -149,7 +154,11 @@ export class Enemy {
 
   takeDamage(amount) {
     if (this.dead || this.exploding || !Number.isFinite(amount) || amount <= 0) return false;
+    const previousHealth = this.health;
     this.health = Math.max(0, this.health - amount);
+    this.lastDamage = Math.ceil(previousHealth - this.health);
+    this.damageTextTimer = 0.75;
+    this.damageTextOffset = 0;
     this.hitFlash = 0.12;
     if (this.health <= 0) {
       this.dead = true;
@@ -166,13 +175,33 @@ export class Enemy {
     drawEnemyFrame(ctx, this.assets, this.animator, this.x, this.y, this.scale);
     ctx.globalAlpha = 1;
 
-    if (this.health < this.maxHealth && !this.dead) {
+    if (!this.dead) {
       const width = this.type === "boss" ? 92 : 48;
-      const ratio = this.health / this.maxHealth;
-      ctx.fillStyle = "rgba(3, 8, 16, 0.82)";
-      ctx.fillRect(this.x - width / 2, this.y - this.radius - 14, width, 5);
+      const ratio = Math.max(0, Math.min(1, this.health / this.maxHealth));
+      const barY = this.y - this.radius - 12;
+      ctx.save();
+      ctx.fillStyle = "rgba(3, 8, 16, 0.88)";
+      ctx.fillRect(this.x - width / 2, barY, width, 5);
       ctx.fillStyle = this.type === "boss" ? "#f36b75" : "#f0ad61";
-      ctx.fillRect(this.x - width / 2, this.y - this.radius - 14, width * ratio, 5);
+      ctx.fillRect(this.x - width / 2, barY, width * ratio, 5);
+      ctx.strokeStyle = "rgba(235, 245, 255, 0.55)";
+      ctx.lineWidth = 0.7;
+      ctx.strokeRect(this.x - width / 2, barY, width, 5);
+      ctx.font = this.type === "boss" ? "700 11px Rajdhani, sans-serif" : "600 9px Rajdhani, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#f3f7ff";
+      ctx.shadowColor = "#050b16";
+      ctx.shadowBlur = 4;
+      ctx.fillText(`${Math.ceil(this.health)} / ${this.maxHealth}`, this.x, barY - 3);
+      if (this.damageTextTimer > 0) {
+        ctx.font = "700 13px Rajdhani, sans-serif";
+        ctx.fillStyle = "#fff1a8";
+        ctx.shadowColor = "#ff9b55";
+        ctx.shadowBlur = 8;
+        ctx.globalAlpha = Math.min(1, this.damageTextTimer / 0.2);
+        ctx.fillText(`-${this.lastDamage}`, this.x, barY - 19 - this.damageTextOffset);
+      }
+      ctx.restore();
     }
   }
 }
