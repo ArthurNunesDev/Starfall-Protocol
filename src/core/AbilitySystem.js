@@ -44,6 +44,7 @@ export class AbilitySystem {
   #lastWave = 0;
   #lastResourceWave = 0;
   #drones = [];
+  #droneOrbitAngle = 0;
   #effects = [];
   #reportedDefeats = new WeakSet();
   #nucleusProcessed = new WeakSet();
@@ -185,9 +186,14 @@ export class AbilitySystem {
   #activateDrone() {
     if (this.#cooldowns.drone > 0 || this.#drones.length >= DRONE_MAX) return;
     this.#cooldowns.drone = DRONE_COOLDOWN;
-    const nextIndex = this.#drones.length;
+    const occupiedSlots = new Set(this.#drones.map((drone) => drone.slot));
+    let slot = 0;
+    while (occupiedSlots.has(slot) && slot < DRONE_MAX) slot += 1;
+    if (slot >= DRONE_MAX) return;
+
     this.#drones.push({
-      angle: (nextIndex / DRONE_MAX) * Math.PI * 2,
+      slot,
+      angle: this.#droneOrbitAngle + (slot / DRONE_MAX) * Math.PI * 2,
       age: 0,
       shotTimer: DRONE_INTERVAL,
       x: 0,
@@ -197,9 +203,10 @@ export class AbilitySystem {
 
   #updateDrones(player, enemyManager, deltaTime) {
     const targets = enemyManager?.targets ?? [];
+    this.#droneOrbitAngle = (this.#droneOrbitAngle + deltaTime * 1.8) % (Math.PI * 2);
     for (const drone of this.#drones) {
       drone.age += deltaTime;
-      drone.angle += deltaTime * 1.8;
+      drone.angle = this.#droneOrbitAngle + (drone.slot / DRONE_MAX) * Math.PI * 2;
       drone.x = player.x + Math.cos(drone.angle) * 48;
       drone.y = player.y + Math.sin(drone.angle) * 30 - 24;
       drone.shotTimer -= deltaTime;
@@ -567,6 +574,7 @@ export class AbilitySystem {
     this.#lastWave = 0;
     this.#lastResourceWave = 0;
     this.#drones = [];
+    this.#droneOrbitAngle = 0;
     this.#effects = [];
     this.#reportedDefeats = new WeakSet();
     this.#nucleusProcessed = new WeakSet();
