@@ -46,16 +46,20 @@ export async function loadSoldierAssets() {
   return Object.freeze({ atlas, image });
 }
 
+export function directionFromAngle(angle) {
+  if (!Number.isFinite(angle)) return "S";
+  const sector = Math.round((angle + Math.PI / 2) / (Math.PI / 4));
+  return DIRECTIONS[((sector % 8) + 8) % 8];
+}
+
 export function directionFromVector(dx, dy, current = "S") {
   if (dx === 0 && dy === 0) return current;
-  const angle = Math.atan2(dy, dx);
-  const sector = (((angle * 180 / Math.PI + 90) / 45) % 8 + 8) % 8;
-  const currentIndex = DIRECTIONS.indexOf(current);
-  let difference = sector - currentIndex;
-  if (difference > 4) difference -= 8;
-  if (difference < -4) difference += 8;
-  if (Math.abs(difference) <= 0.62) return current;
-  return DIRECTIONS[Math.round(sector) % 8];
+  return directionFromAngle(Math.atan2(dy, dx));
+}
+
+export function directionAngle(direction) {
+  const index = DIRECTIONS.indexOf(direction);
+  return index < 0 ? Math.PI / 2 : index * (Math.PI / 4) - Math.PI / 2;
 }
 
 export class SpriteAnimator {
@@ -65,6 +69,7 @@ export class SpriteAnimator {
   #elapsed = 0;
   #done = false;
   direction = "S";
+  rotation = 0;
   speed = 1;
 
   constructor(atlas) { this.#atlas = atlas; }
@@ -121,9 +126,11 @@ export function drawSoldierFrame(ctx, assets, animator, x, y, scale = 1.5) {
   const { atlas, image } = assets;
   const frame = animator.frameRect;
   ctx.save();
+  ctx.translate(Math.round(x), Math.round(y));
+  ctx.rotate(animator.rotation);
   ctx.imageSmoothingEnabled = false;
   ctx.drawImage(image, frame.x, frame.y, frame.w, frame.h,
-    Math.round(x - atlas.pivot.x * scale), Math.round(y - atlas.pivot.y * scale),
+    -atlas.pivot.x * scale, -atlas.pivot.y * scale,
     frame.w * scale, frame.h * scale);
   ctx.restore();
 }
