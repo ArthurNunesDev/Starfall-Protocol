@@ -3,6 +3,9 @@ import { Enemy } from "./Enemy.js";
 const WAVE_DURATION = 45;
 const MAX_WAVES = 100;
 const FIRST_WAVE_TYPES = ["brute"];
+const SPAWN_GRID_COLUMNS = 5;
+const SPAWN_GRID_ROWS = 4;
+const SPAWN_JITTER = 75;
 const WAVE_UNLOCKS = Object.freeze([
   { wave: 1, types: FIRST_WAVE_TYPES },
   { wave: 15, types: ["brute", "spitter"] },
@@ -73,30 +76,51 @@ export class EnemyManager {
   }
 
   #getSpawnInterval(wave) {
-    // Reduz linearmente de 8 s na wave 1 para 0,75 s na wave 100.
+    // Reduz linearmente de 2 s na wave 1 para 0,1 s na wave 100.
     const progress = (wave - 1) / (MAX_WAVES - 1);
-    return 8 - progress * 7.25;
+    return 2 - progress * 1.9;
   }
 
   #getGroupSize(wave) {
-    // Cresce linearmente de 1 inimigo na wave 1 para 25 na wave 100.
+    // Cresce linearmente de 1 inimigo na wave 1 para 100 na wave 100.
     const progress = (wave - 1) / (MAX_WAVES - 1);
-    return 1 + Math.floor(progress * 24);
+    return 1 + Math.floor(progress * 99);
   }
 
   #spawnGroup(player, world) {
     const availableTypes = this.#getAvailableTypes(this.#wave);
     const groupSize = this.#getGroupSize(this.#wave);
+
     for (let i = 0; i < groupSize; i += 1) {
       const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
-      this.#spawnAroundPlayer(player, world, type, 300 + Math.random() * 100);
+      this.#spawnAtMapPoint(player, world, type);
     }
   }
 
-  #spawnAroundPlayer(player, world, type, distance) {
-    const angle = Math.random() * Math.PI * 2;
-    const x = Math.max(50, Math.min(world.width - 50, player.x + Math.cos(angle) * distance));
-    const y = Math.max(50, Math.min(world.height - 50, player.y + Math.sin(angle) * distance));
+  #spawnAtMapPoint(player, world, type) {
+    const pointIndex = Math.floor(Math.random() * SPAWN_GRID_COLUMNS * SPAWN_GRID_ROWS);
+    const column = pointIndex % SPAWN_GRID_COLUMNS;
+    const row = Math.floor(pointIndex / SPAWN_GRID_COLUMNS);
+    const cellWidth = world.width / SPAWN_GRID_COLUMNS;
+    const cellHeight = world.height / SPAWN_GRID_ROWS;
+
+    const anchorX = cellWidth * (column + 0.5);
+    const anchorY = cellHeight * (row + 0.5);
+    let x = Math.max(
+      50,
+      Math.min(world.width - 50, anchorX + (Math.random() * 2 - 1) * SPAWN_JITTER),
+    );
+    let y = Math.max(
+      50,
+      Math.min(world.height - 50, anchorY + (Math.random() * 2 - 1) * SPAWN_JITTER),
+    );
+
+    // Evita que um ponto de spawn apareça praticamente sobre o operador.
+    if (Math.hypot(player.x - x, player.y - y) < 180) {
+      x = world.width - x;
+      y = world.height - y;
+    }
+
     this.spawn(type, x, y);
   }
 
