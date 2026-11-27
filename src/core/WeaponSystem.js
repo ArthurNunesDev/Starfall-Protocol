@@ -22,8 +22,12 @@ export class WeaponSystem {
     this.#onEnemyDefeated = onEnemyDefeated;
   }
 
-  update(player, enemyManager, deltaTime, mouseWorldPosition = null) {
+  update(player, enemyManager, deltaTime, mouseWorldPosition = null, modifiers = {}) {
     this.#cooldown = Math.max(0, this.#cooldown - deltaTime);
+    const damageMultiplier = Number.isFinite(modifiers.damage) ? modifiers.damage : 1;
+    const fireRateMultiplier = Number.isFinite(modifiers.fireRate) ? Math.max(0.1, modifiers.fireRate) : 1;
+    const firingPaused = modifiers.paused === true;
+    const currentFireInterval = WEAPON.fireInterval / fireRateMultiplier;
     const targets = enemyManager?.targets ?? [];
     let target = null;
     let hoveredTarget = null;
@@ -59,7 +63,7 @@ export class WeaponSystem {
 
     if (target) {
       aimAngle = Math.atan2(target.y - player.y, target.x - player.x);
-      if (this.#cooldown <= 0) this.#fire(player, aimAngle);
+      if (!firingPaused && this.#cooldown <= 0) this.#fire(player, aimAngle, damageMultiplier, currentFireInterval);
     } else if (mouseWorldPosition) {
       aimAngle = Math.atan2(
         mouseWorldPosition.y - player.y,
@@ -72,15 +76,15 @@ export class WeaponSystem {
     this.#updateProjectiles(targets, deltaTime);
   }
 
-  #fire(player, angle) {
-    this.#cooldown = WEAPON.fireInterval;
+  #fire(player, angle, damageMultiplier, fireInterval) {
+    this.#cooldown = fireInterval;
     const muzzleOffset = 25;
     this.#projectiles.push({
       x: player.x + Math.cos(angle) * muzzleOffset,
       y: player.y + Math.sin(angle) * muzzleOffset,
       vx: Math.cos(angle) * WEAPON.projectileSpeed,
       vy: Math.sin(angle) * WEAPON.projectileSpeed,
-      damage: WEAPON.damage,
+      damage: WEAPON.damage * damageMultiplier,
       radius: WEAPON.projectileRadius,
       remaining: WEAPON.projectileRange,
     });
@@ -114,6 +118,7 @@ export class WeaponSystem {
             id: enemy.type,
             name: enemy.name,
             description: `Ameaça neutralizada: ${enemy.name}.`,
+            enemy,
           });
         }
         projectile.remaining = 0;
