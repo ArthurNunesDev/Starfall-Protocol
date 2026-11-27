@@ -43,7 +43,7 @@ export class Renderer {
     this.#context.setTransform(this.#pixelRatio, 0, 0, this.#pixelRatio, 0, 0);
   }
 
-  render({ world, player, enemies, weapons, abilities, camera, elapsedTime = 0, enemyCount = 0, kills = 0, wave = 1 }) {
+  render({ world, player, enemies, weapons, abilities, camera, elapsedTime = 0, enemyCount = 0, kills = 0, wave = 1, waveTimeRemaining = 45, waveAnnouncementRemaining = 0 }) {
     const ctx = this.#context;
     ctx.setTransform(this.#pixelRatio, 0, 0, this.#pixelRatio, 0, 0);
     ctx.clearRect(0, 0, this.#width, this.#height);
@@ -57,13 +57,14 @@ export class Renderer {
     weapons?.render(ctx);
     player.render(ctx, abilities?.weaponVisualState ?? null);
     ctx.restore();
-    this.#renderHud({ elapsedTime, enemyCount, kills, wave, player, abilities: abilities?.hudState ?? null });
+    this.#renderHud({ elapsedTime, enemyCount, kills, wave, waveTimeRemaining, waveAnnouncementRemaining, player, abilities: abilities?.hudState ?? null });
   }
 
-  #renderHud({ elapsedTime, enemyCount, kills, wave, player, abilities }) {
+  #renderHud({ enemyCount, kills, wave, waveTimeRemaining, waveAnnouncementRemaining, player, abilities }) {
     const ctx = this.#context;
-    const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, "0");
-    const seconds = Math.floor(elapsedTime % 60).toString().padStart(2, "0");
+    const remaining = Math.max(0, Math.ceil(waveTimeRemaining));
+    const minutes = Math.floor(remaining / 60).toString().padStart(2, "0");
+    const seconds = (remaining % 60).toString().padStart(2, "0");
     ctx.save();
     ctx.textAlign = "left";
     ctx.font = "600 11px Rajdhani, sans-serif";
@@ -75,9 +76,38 @@ export class Renderer {
     }
     ctx.textAlign = "right";
     ctx.fillStyle = "#a9bdcf";
-    ctx.fillText(`WAVE  ${wave} / 100   //   ${minutes}:${seconds}`, this.#width - 20, 30);
+    ctx.fillText(`WAVE  ${String(wave).padStart(2, "0")} / 100   //   ${minutes}:${seconds}`, this.#width - 20, 30);
     ctx.fillText(`AMEAÇAS  ${enemyCount}   //   ELIMINAÇÕES  ${kills}`, this.#width - 20, 70);
+    if (waveAnnouncementRemaining > 0) this.#renderWaveAnnouncement(wave, waveAnnouncementRemaining);
     this.#renderAbilityHud(abilities);
+    ctx.restore();
+  }
+
+  #renderWaveAnnouncement(wave, remaining) {
+    const ctx = this.#context;
+    const alpha = Math.min(1, remaining * 2, (3 - remaining) * 3);
+    const panelWidth = 260;
+    const panelHeight = 66;
+    const x = (this.#width - panelWidth) / 2;
+    const y = Math.max(82, this.#height * 0.2);
+
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, alpha);
+    ctx.fillStyle = "rgba(3, 12, 25, 0.88)";
+    ctx.fillRect(x, y, panelWidth, panelHeight);
+    ctx.strokeStyle = "rgba(105, 229, 245, 0.8)";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x, y, panelWidth, panelHeight);
+    ctx.textAlign = "center";
+    ctx.shadowColor = "#48dff5";
+    ctx.shadowBlur = 16;
+    ctx.fillStyle = "#9af3ff";
+    ctx.font = "700 25px Rajdhani, sans-serif";
+    ctx.fillText(`WAVE ${String(wave).padStart(2, "0")}`, this.#width / 2, y + 30);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#c3d7e5";
+    ctx.font = "600 10px Rajdhani, sans-serif";
+    ctx.fillText("NOVA ONDA DE AMEAÇAS", this.#width / 2, y + 49);
     ctx.restore();
   }
 
