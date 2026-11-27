@@ -11,8 +11,8 @@ if (!(canvas instanceof HTMLCanvasElement)) {
 }
 
 const screenManager = new ScreenManager();
-const game = new Game(canvas);
 const playerProfile = new PlayerProfile();
+const game = new Game(canvas, playerProfile);
 new MainMenu(screenManager, game, playerProfile);
 new ParallaxBackground();
 
