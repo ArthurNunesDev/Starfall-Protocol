@@ -55,11 +55,19 @@ export class WeaponSystem {
 
     if (hoveredTarget) target = hoveredTarget;
 
+    let aimAngle = null;
+
     if (target) {
-      const angle = Math.atan2(target.y - player.y, target.x - player.x);
-      player.setFacingAngle(angle, deltaTime);
-      if (this.#cooldown <= 0) this.#fire(player, angle);
+      aimAngle = Math.atan2(target.y - player.y, target.x - player.x);
+      if (this.#cooldown <= 0) this.#fire(player, aimAngle);
+    } else if (mouseWorldPosition) {
+      aimAngle = Math.atan2(
+        mouseWorldPosition.y - player.y,
+        mouseWorldPosition.x - player.x,
+      );
     }
+
+    if (aimAngle !== null) player.setFacingAngle(aimAngle, deltaTime);
 
     this.#updateProjectiles(targets, deltaTime);
   }
