@@ -9,6 +9,7 @@ import { loadSoldierAssets } from "./SoldierSprite.js";
 import { loadEnemyAssets } from "./EnemySprite.js";
 import { EnemyManager } from "./EnemyManager.js";
 import { WeaponSystem } from "./WeaponSystem.js";
+import { AbilitySystem } from "./AbilitySystem.js";
 
 const PLAYER_RADIUS = 15;
 const SAVE_INTERVAL = 1;
@@ -32,15 +33,19 @@ export class Game {
   #onGameOver;
   #profile;
   #weapons;
+  #abilities;
 
   constructor(canvas, profile = null, onGameOver = null) {
     this.#canvas = canvas;
     this.#renderer = new Renderer(canvas);
     this.#profile = profile;
     this.#onGameOver = typeof onGameOver === "function" ? onGameOver : () => {};
+    this.#abilities = new AbilitySystem({
+      onEnemyDefeated: (enemy) => this.#profile?.recordEnemyDefeat(enemy),
+    });
     this.#weapons = new WeaponSystem({
       onWeaponUnlocked: (weapon) => this.#profile?.unlockWeapon(weapon),
-      onEnemyDefeated: (enemy) => this.#profile?.recordEnemyDefeat(enemy),
+      onEnemyDefeated: (record) => this.#abilities.onEnemyDefeated(record.enemy, this.#enemies),
     });
     this.#loop = new GameLoop({
       update: (deltaTime) => this.update(deltaTime),
@@ -121,6 +126,7 @@ export class Game {
     this.#player = new Player(WORLD.width / 2, WORLD.height / 2, this.#spriteAssets);
     this.#enemies = this.#enemyAssets ? new EnemyManager(this.#enemyAssets) : null;
     this.#weapons.reset();
+    this.#abilities.reset();
     this.#camera = new Camera();
   }
 
@@ -133,7 +139,8 @@ export class Game {
     const mouseWorldPosition = mouse
       ? { x: mouse.x + this.#camera.x, y: mouse.y + this.#camera.y }
       : null;
-    this.#weapons.update(this.#player, this.#enemies, deltaTime, mouseWorldPosition);
+    this.#abilities.update(this.#input, this.#player, this.#enemies, deltaTime, WORLD, mouseWorldPosition);
+    this.#weapons.update(this.#player, this.#enemies, deltaTime, mouseWorldPosition, this.#abilities.weaponModifiers);
     this.#camera.follow(this.#player, this.#renderer.width, this.#renderer.height, WORLD, deltaTime);
     this.#saveAccumulator += deltaTime;
 
@@ -158,6 +165,7 @@ export class Game {
       player: this.#player,
       enemies: this.#enemies,
       weapons: this.#weapons,
+      abilities: this.#abilities,
       camera: this.#camera,
       elapsedTime: this.#elapsedTime,
       enemyCount: this.#enemies?.count ?? 0,
