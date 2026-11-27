@@ -43,7 +43,7 @@ export class Renderer {
     this.#context.setTransform(this.#pixelRatio, 0, 0, this.#pixelRatio, 0, 0);
   }
 
-  render({ world, player, enemies, weapons, camera, elapsedTime = 0, enemyCount = 0, kills = 0, wave = 1 }) {
+  render({ world, player, enemies, weapons, abilities, camera, elapsedTime = 0, enemyCount = 0, kills = 0, wave = 1 }) {
     const ctx = this.#context;
     ctx.setTransform(this.#pixelRatio, 0, 0, this.#pixelRatio, 0, 0);
     ctx.clearRect(0, 0, this.#width, this.#height);
@@ -53,13 +53,14 @@ export class Renderer {
     ctx.translate(-camera.x, -camera.y);
     this.#renderWorld(world, camera);
     enemies?.render(ctx);
+    abilities?.render(ctx);
     weapons?.render(ctx);
     player.render(ctx);
     ctx.restore();
-    this.#renderHud({ elapsedTime, enemyCount, kills, wave });
+    this.#renderHud({ elapsedTime, enemyCount, kills, wave, player, abilities: abilities?.hudState ?? null });
   }
 
-  #renderHud({ elapsedTime, enemyCount, kills, wave }) {
+  #renderHud({ elapsedTime, enemyCount, kills, wave, player, abilities }) {
     const ctx = this.#context;
     const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, "0");
     const seconds = Math.floor(elapsedTime % 60).toString().padStart(2, "0");
@@ -68,11 +69,58 @@ export class Renderer {
     ctx.font = "600 11px Rajdhani, sans-serif";
     ctx.fillStyle = "rgba(121, 234, 255, 0.82)";
     ctx.fillText("ARMAMENTO  ·  FUZIL DE PULSO", 20, this.#height - 18);
+    if (player?.totalShield > 0) {
+      ctx.fillStyle = player.emergencyShield > 0 ? "#ffd170" : "#75eaff";
+      ctx.fillText("ESCUDO  " + Math.ceil(player.totalShield), 20, 30);
+    }
     ctx.textAlign = "right";
     ctx.fillStyle = "#a9bdcf";
     ctx.fillText(`WAVE  ${wave} / 100   //   ${minutes}:${seconds}`, this.#width - 20, 30);
     ctx.fillText(`AMEAÇAS  ${enemyCount}   //   ELIMINAÇÕES  ${kills}`, this.#width - 20, 49);
+    this.#renderAbilityHud(abilities);
     ctx.restore();
+  }
+
+  #renderAbilityHud(state) {
+    if (!state) return;
+    const ctx = this.#context;
+    const slots = [
+      { key: "Q", label: "FENDA", status: state.riftCharges + "/2", ready: state.riftCharges > 0 },
+      { key: "Z", label: "PULSO", status: state.pulseCooldown > 0 ? state.pulseCooldown.toFixed(1) + "s" : "PRONTO", ready: state.pulseCooldown <= 0 },
+      { key: "X", label: "SOBRECARGA", status: state.overloadRemaining > 0 ? state.overloadRemaining.toFixed(1) + "s" : state.overloadCooldown > 0 ? state.overloadCooldown.toFixed(1) + "s" : "PRONTO", ready: state.overloadCooldown <= 0 },
+      { key: "C", label: "DRONES", status: state.droneCount + "/3" + (state.droneCooldown > 0 ? " · " + state.droneCooldown.toFixed(1) + "s" : ""), ready: state.droneCooldown <= 0 && state.droneCount < 3 },
+      { key: "V", label: "LASER", status: state.ultimateCharging ? state.ultimateCharge.toFixed(1) + "/10s" : state.ultimateCooldown > 0 ? state.ultimateCooldown.toFixed(1) + "s" : state.ultimateBuffRemaining > 0 ? "BUFF " + state.ultimateBuffRemaining.toFixed(0) + "s" : "PRONTO", ready: state.ultimateCooldown <= 0 },
+    ];
+    const width = 68;
+    const height = 30;
+    const gap = 4;
+    const totalWidth = slots.length * width + (slots.length - 1) * gap;
+    const startX = Math.max(6, (this.#width - totalWidth) / 2);
+    const y = this.#height - 48;
+
+    slots.forEach((slot, index) => {
+      const x = startX + index * (width + gap);
+      ctx.fillStyle = "rgba(4, 13, 25, 0.86)";
+      ctx.fillRect(x, y, width, height);
+      ctx.strokeStyle = slot.ready ? "rgba(86, 210, 235, 0.55)" : "rgba(122, 143, 164, 0.3)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, width, height);
+      ctx.textAlign = "left";
+      ctx.font = "700 9px Rajdhani, sans-serif";
+      ctx.fillStyle = slot.ready ? "#8ceeff" : "#91a2b2";
+      ctx.fillText(slot.key, x + 5, y + 11);
+      ctx.font = "600 8px Rajdhani, sans-serif";
+      ctx.fillStyle = "#d8e8f4";
+      ctx.fillText(slot.label, x + 17, y + 11);
+      ctx.textAlign = "center";
+      ctx.font = "600 9px Rajdhani, sans-serif";
+      ctx.fillStyle = slot.ready ? "#79e8c5" : "#b0bac5";
+      ctx.fillText(slot.status, x + width / 2, y + 24);
+      if (slot.key === "V" && state.ultimateCharging) {
+        ctx.fillStyle = state.ultimateCharge > 5 ? "#ff526b" : "#70eaff";
+        ctx.fillRect(x + 2, y + height - 2, (width - 4) * (state.ultimateCharge / 10), 2);
+      }
+    });
   }
 
   #renderWorld(world, camera) {
