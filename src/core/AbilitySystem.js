@@ -130,6 +130,7 @@ export class AbilitySystem {
 
     player.x = endX;
     player.y = endY;
+    const empowered = this.#ultimateBuffTimer > 0;
     this.#effects.push({
       type: "trail",
       startX,
@@ -138,6 +139,7 @@ export class AbilitySystem {
       endY,
       age: 0,
       duration: 2,
+      empowered,
     });
     this.#riftCharges -= 1;
     if (this.#riftCharges < MAX_RIFT_CHARGES && this.#riftRechargeTimer <= 0) {
@@ -148,7 +150,18 @@ export class AbilitySystem {
   #activatePulse(player, enemyManager, world) {
     if (this.#cooldowns.pulse > 0) return;
     this.#cooldowns.pulse = 8;
-    this.#effects.push({ type: "pulse", x: player.x, y: player.y, age: 0, duration: 0.42, radius: PULSE_RADIUS, color: "#65eaff" });
+    const empowered = this.#ultimateBuffTimer > 0;
+    const damageMultiplier = empowered ? 1.25 : 1;
+    this.#effects.push({
+      type: "pulse",
+      x: player.x,
+      y: player.y,
+      age: 0,
+      duration: 0.42,
+      radius: PULSE_RADIUS,
+      color: empowered ? "#ff3158" : "#65eaff",
+      empowered,
+    });
 
     for (const enemy of enemyManager?.targets ?? []) {
       if (enemy.exploding) continue;
@@ -156,7 +169,7 @@ export class AbilitySystem {
       const dy = enemy.y - player.y;
       const distance = Math.hypot(dx, dy);
       if (distance > PULSE_RADIUS + enemy.radius) continue;
-      this.#damageEnemy(enemy, PULSE_DAMAGE, enemyManager);
+      this.#damageEnemy(enemy, PULSE_DAMAGE * damageMultiplier, enemyManager);
       const angle = distance > 0.001 ? Math.atan2(dy, dx) : 0;
       enemy.x = clamp(enemy.x + Math.cos(angle) * PULSE_PUSH, enemy.radius, world.width - enemy.radius);
       enemy.y = clamp(enemy.y + Math.sin(angle) * PULSE_PUSH, enemy.radius, world.height - enemy.radius);
@@ -207,8 +220,18 @@ export class AbilitySystem {
           }
         }
         if (target) {
-          this.#effects.push({ type: "drone-shot", x1: drone.x, y1: drone.y, x2: target.x, y2: target.y, age: 0, duration: 0.12 });
-          this.#damageEnemy(target, DRONE_DAMAGE, enemyManager);
+          const empowered = this.#ultimateBuffTimer > 0;
+          this.#effects.push({
+            type: "drone-shot",
+            x1: drone.x,
+            y1: drone.y,
+            x2: target.x,
+            y2: target.y,
+            age: 0,
+            duration: 0.12,
+            empowered,
+          });
+          this.#damageEnemy(target, DRONE_DAMAGE * (empowered ? 1.25 : 1), enemyManager);
         }
       }
     }
@@ -360,6 +383,7 @@ export class AbilitySystem {
   render(ctx) {
     for (const effect of this.#effects) {
       const progress = effect.age / effect.duration;
+      const empoweredColor = effect.empowered ? "#ff3158" : "#55eaff";
       if (effect.type === "trail") {
         ctx.save();
         const alpha = Math.max(0, 1 - progress);
@@ -369,15 +393,15 @@ export class AbilitySystem {
         ctx.globalAlpha = alpha;
         ctx.lineCap = "round";
         ctx.shadowBlur = 24;
-        ctx.shadowColor = "#55eaff";
-        ctx.strokeStyle = "rgba(87, 231, 255, 0.22)";
+        ctx.shadowColor = empoweredColor;
+        ctx.strokeStyle = effect.empowered ? "rgba(255, 49, 88, 0.24)" : "rgba(87, 231, 255, 0.22)";
         ctx.lineWidth = 30 * (1 - progress * 0.45);
         ctx.beginPath();
         ctx.moveTo(effect.startX, effect.startY);
         ctx.lineTo(effect.endX, effect.endY);
         ctx.stroke();
         ctx.shadowBlur = 14;
-        ctx.strokeStyle = "#6af1ff";
+        ctx.strokeStyle = effect.empowered ? "#ff3158" : "#6af1ff";
         ctx.lineWidth = 9 * (1 - progress * 0.35);
         ctx.beginPath();
         ctx.moveTo(effect.startX, effect.startY);
@@ -385,7 +409,7 @@ export class AbilitySystem {
         ctx.stroke();
         ctx.setLineDash([7, 12]);
         ctx.lineDashOffset = -effect.age * 70;
-        ctx.strokeStyle = "#d8fbff";
+        ctx.strokeStyle = effect.empowered ? "#ffe1e7" : "#d8fbff";
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(effect.startX, effect.startY);
@@ -399,8 +423,8 @@ export class AbilitySystem {
           ctx.save();
           ctx.translate(x, y);
           ctx.rotate(direction);
-          ctx.strokeStyle = "#b9f8ff";
-          ctx.shadowColor = "#4be7ff";
+          ctx.strokeStyle = effect.empowered ? "#ffd1da" : "#b9f8ff";
+          ctx.shadowColor = effect.empowered ? "#ff1744" : "#4be7ff";
           ctx.shadowBlur = 18;
           ctx.lineWidth = 3;
           ctx.beginPath();
@@ -424,11 +448,12 @@ export class AbilitySystem {
         ctx.save();
         ctx.globalAlpha = Math.max(0, 1 - progress);
         const isRedLaser = effect.type === "laser" && effect.red;
-        ctx.strokeStyle = isRedLaser ? "#ff1744" : effect.type === "laser" ? "#8af5ff" : "#5deaff";
+        const isEmpoweredShot = effect.type === "drone-shot" && effect.empowered;
+        ctx.strokeStyle = isRedLaser || isEmpoweredShot ? "#ff1744" : effect.type === "laser" ? "#8af5ff" : "#5deaff";
         ctx.shadowColor = ctx.strokeStyle;
-        ctx.shadowBlur = effect.type === "laser" ? (isRedLaser ? 42 : 28) : 12;
+        ctx.shadowBlur = effect.type === "laser" ? (isRedLaser ? 42 : 28) : isEmpoweredShot ? 24 : 12;
         ctx.lineCap = "round";
-        ctx.lineWidth = effect.type === "laser" ? (isRedLaser ? 18 : 12) * (1 - progress) + 3 : 2;
+        ctx.lineWidth = effect.type === "laser" ? (isRedLaser ? 18 : 12) * (1 - progress) + 3 : isEmpoweredShot ? 4 : 2;
         ctx.beginPath();
         ctx.moveTo(effect.x1, effect.y1);
         ctx.lineTo(effect.x2, effect.y2);
@@ -452,18 +477,71 @@ export class AbilitySystem {
       }
     }
 
+    const dronesEmpowered = this.#ultimateBuffTimer > 0;
     for (const drone of this.#drones) {
+      const mainColor = dronesEmpowered ? "#ff3158" : "#63eaff";
+      const coreColor = dronesEmpowered ? "#fff0f3" : "#e5fcff";
+      const darkColor = dronesEmpowered ? "#761c32" : "#15516a";
+      const pulse = 1 + Math.sin(drone.age * 7) * 0.08;
+
       ctx.save();
-      ctx.shadowColor = "#5ceaff";
-      ctx.shadowBlur = 14;
-      ctx.fillStyle = "#b8f8ff";
-      ctx.beginPath();
-      ctx.arc(drone.x, drone.y, 7, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = "#38b9d4";
+      ctx.translate(drone.x, drone.y);
+      ctx.rotate(drone.angle * 0.35);
+      ctx.globalAlpha = 0.9;
+      ctx.shadowColor = mainColor;
+      ctx.shadowBlur = dronesEmpowered ? 25 : 18;
+
+      // Propulsores laterais.
+      ctx.fillStyle = darkColor;
+      ctx.strokeStyle = mainColor;
+      ctx.lineWidth = 1.5;
+      for (const side of [-1, 1]) {
+        ctx.save();
+        ctx.rotate(side * 0.18);
+        ctx.beginPath();
+        ctx.moveTo(-3, side * 3);
+        ctx.lineTo(-13, side * 10);
+        ctx.lineTo(-9, side * 14);
+        ctx.lineTo(1, side * 7);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+        ctx.fillStyle = mainColor;
+        ctx.globalAlpha = 0.65 + Math.sin(drone.age * 12 + side) * 0.2;
+        ctx.beginPath();
+        ctx.ellipse(-10, side * 11, 2.5, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 0.9;
+      }
+
+      // Carcaça central e núcleo luminoso.
+      ctx.fillStyle = darkColor;
+      ctx.strokeStyle = mainColor;
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(drone.x, drone.y, 11, 0, Math.PI * 2);
+      ctx.moveTo(12, 0);
+      ctx.lineTo(5, -7);
+      ctx.lineTo(-7, -6);
+      ctx.lineTo(-11, 0);
+      ctx.lineTo(-7, 6);
+      ctx.lineTo(5, 7);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = coreColor;
+      ctx.shadowBlur = dronesEmpowered ? 22 : 14;
+      ctx.beginPath();
+      ctx.arc(0, 0, 3.5 * pulse, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = mainColor;
+      ctx.globalAlpha = 0.75;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 16, 10, 0, 0, Math.PI * 2);
       ctx.stroke();
       ctx.restore();
     }
