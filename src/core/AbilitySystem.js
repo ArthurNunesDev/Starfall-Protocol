@@ -327,7 +327,8 @@ export class AbilitySystem {
 
   get weaponVisualState() {
     return {
-      ultimateRed: this.#ultimateBuffTimer > 0,
+      ultimateRed: (this.#ultimateCharging && this.#ultimateCharge > 5)
+        || this.#ultimateBuffTimer > 0,
     };
   }
 
