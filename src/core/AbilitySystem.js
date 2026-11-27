@@ -7,7 +7,7 @@ const PULSE_PUSH = 120;
 const OVERLOAD_DURATION = 8;
 const OVERLOAD_COOLDOWN = 20;
 const DRONE_DURATION = 10;
-const DRONE_COOLDOWN = 12;
+const DRONE_COOLDOWN = 4;
 const DRONE_MAX = 3;
 const DRONE_DAMAGE = 3;
 const DRONE_INTERVAL = 1;
@@ -185,17 +185,14 @@ export class AbilitySystem {
   #activateDrone() {
     if (this.#cooldowns.drone > 0 || this.#drones.length >= DRONE_MAX) return;
     this.#cooldowns.drone = DRONE_COOLDOWN;
-    const baseCount = this.#drones.length;
-    const availableSlots = DRONE_MAX - baseCount;
-    for (let index = 0; index < availableSlots; index += 1) {
-      this.#drones.push({
-        angle: ((baseCount + index) / DRONE_MAX) * Math.PI * 2,
-        age: 0,
-        shotTimer: DRONE_INTERVAL,
-        x: 0,
-        y: 0,
-      });
-    }
+    const nextIndex = this.#drones.length;
+    this.#drones.push({
+      angle: (nextIndex / DRONE_MAX) * Math.PI * 2,
+      age: 0,
+      shotTimer: DRONE_INTERVAL,
+      x: 0,
+      y: 0,
+    });
   }
 
   #updateDrones(player, enemyManager, deltaTime) {
@@ -360,6 +357,7 @@ export class AbilitySystem {
       damage: this.#ultimateBuffTimer > 0 ? 1.25 : 1,
       fireRate: (this.#overloadTimer > 0 ? 2 : 1) * (this.#ultimateBuffTimer > 0 ? 1.25 : 1),
       paused: this.#ultimateCharging,
+      ultimateActive: this.#ultimateBuffTimer > 0,
     };
   }
 
