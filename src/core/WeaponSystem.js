@@ -30,6 +30,7 @@ export class WeaponSystem {
 
     for (const enemy of targets) {
       const distance = Math.hypot(enemy.x - player.x, enemy.y - player.y);
+      if (enemy.exploding || distance >= nearestDistance) continue;
       if (distance < nearestDistance) {
         nearestDistance = distance;
         target = enemy;
@@ -39,13 +40,13 @@ export class WeaponSystem {
     if (target) {
       const angle = Math.atan2(target.y - player.y, target.x - player.x);
       player.setFacingAngle(angle, deltaTime);
-      if (this.#cooldown <= 0) this.#fire(player, target, angle);
+      if (this.#cooldown <= 0) this.#fire(player, angle);
     }
 
     this.#updateProjectiles(targets, deltaTime);
   }
 
-  #fire(player, target, angle) {
+  #fire(player, angle) {
     this.#cooldown = WEAPON.fireInterval;
     const muzzleOffset = 25;
     this.#projectiles.push({
@@ -76,7 +77,7 @@ export class WeaponSystem {
       projectile.remaining -= distance;
 
       for (const enemy of targets) {
-        if (enemy.dead || enemy.removed) continue;
+        if (enemy.dead || enemy.removed || enemy.exploding) continue;
         if (Math.hypot(enemy.x - projectile.x, enemy.y - projectile.y)
           > enemy.radius + projectile.radius) continue;
 
