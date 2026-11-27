@@ -184,13 +184,6 @@
       </div>
       <div class="game-viewport">
         <canvas id="game-canvas" aria-label="Arena de combate. Use W, A, S, D ou as setas do teclado para movimentar o operador. O fuzil de pulso mira e dispara automaticamente contra inimigos próximos."></canvas>
-        <div class="game-over-overlay" id="game-over-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="game-over-title">
-          <p class="eyebrow">PROTOCOLO INTERROMPIDO</p>
-          <h3 id="game-over-title">OPERADOR ELIMINADO</h3>
-          <p>A integridade chegou a zero. Reorganize sua estratégia e tente novamente.</p>
-          <button class="menu-button menu-button--primary" type="button" data-action="restart-game">TENTAR NOVAMENTE <span class="menu-button__arrow" aria-hidden="true">↻</span></button>
-          <button class="back-button" type="button" data-screen="main-menu">VOLTAR AO MENU</button>
-        </div>
         <button class="game-fullscreen-button" type="button" data-action="game-fullscreen" aria-label="Expandir mapa para tela cheia">TELA CHEIA <span aria-hidden="true">⛶</span></button>
         <div class="game-viewport__corner game-viewport__corner--tl" aria-hidden="true"></div>
         <div class="game-viewport__corner game-viewport__corner--tr" aria-hidden="true"></div>
@@ -201,6 +194,22 @@
         <span><i class="game-status-dot"></i> SIMULAÇÃO ATIVA</span>
         <span>MOVIMENTO <strong>W A S D</strong> / <strong>↑ ↓ ← →</strong></span>
         <span>MAPA <strong>2800 × 2000</strong></span>
+      </div>
+    </section>
+
+    <section class="screen death-screen" id="death-screen" aria-labelledby="death-title" hidden>
+      <div class="death-panel">
+        <div class="death-symbol" aria-hidden="true"><span>×</span></div>
+        <p class="eyebrow">PROTOCOLO INTERROMPIDO // SINAL PERDIDO</p>
+        <h2 class="death-title" id="death-title">OPERADOR ELIMINADO</h2>
+        <p class="death-description">A integridade do operador chegou a zero. A operação foi encerrada.</p>
+        <div class="death-status"><span></span> CONEXÃO COM A UNIDADE PERDIDA</div>
+        <div class="death-actions">
+          <button class="menu-button menu-button--primary death-restart-button" type="button" data-action="restart-game">
+            <span>RECOMEÇAR OPERAÇÃO</span><span class="menu-button__arrow" aria-hidden="true">↻</span>
+          </button>
+          <button class="back-button" type="button" data-screen="main-menu"><span aria-hidden="true">←</span> VOLTAR AO MENU</button>
+        </div>
       </div>
     </section>
 
