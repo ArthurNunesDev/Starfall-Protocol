@@ -97,7 +97,7 @@ Acesse `http://localhost:8000`.
 
 ## Status
 
-**Etapa 3 — Jogador:** movimentação top-down, operador em pixel art com oito direções, animações de idle e corrida, arena de teste, câmera follow e limites do mapa. A sessão ativa é restaurada após recarregar a página; o perfil mantém a seleção e os desbloqueios.
+**Etapa 3 — Jogador:** movimentação top-down, operador em pixel art com 16 orientações com transição angular suave (aproveitando os oito eixos desenhados na spritesheet), animações de idle e corrida, arena de teste, câmera follow e limites do mapa. A sessão ativa é restaurada após recarregar a página; o perfil mantém a seleção e os desbloqueios.
 
 
 ## Sistema de inimigos e combate recebido
@@ -109,6 +109,7 @@ Acesse `http://localhost:8000`.
 - **Boss:** surge após 60 segundos, possui vida ampliada, fase agressiva abaixo de 50% de vida, ataques corpo a corpo, golpe em área e rajada de projéteis.
 - Hordas adicionam inimigos em intervalos progressivamente menores, respeitando o limite de entidades ativas.
 - O operador possui 100 pontos de integridade, janela curta de invulnerabilidade após receber dano, HUD de vida/tempo/ameaças/eliminação e tela de derrota com reinício.
+- O Fuzil de Pulso dispara automaticamente contra o inimigo mais próximo, com projéteis físicos, alcance, cadência e dano configurados. Eliminações são registradas no perfil e liberam o Arsenal.
 - Os atlases JSON controlam os eventos de impacto das animações; as spritesheets são carregadas e validadas antes da partida.
 
-O sistema de armas do operador e a progressão de experiência ainda são etapas separadas.
+A primeira arma está integrada; novas armas, habilidades manuais, experiência e aprimoramentos continuam como etapas futuras.
