@@ -1,26 +1,28 @@
 import { directionToTarget, drawEnemyFrame, EnemyAnimator } from "./EnemySprite.js";
 
 const ENEMY_CONFIG = Object.freeze({
-  brute: { name: "Brute", health: 100, speed: 76, radius: 22, scale: 1.5, damage: 13, range: 54, cooldown: 1.45 },
-  crawler: { name: "Crawler", health: 55, speed: 126, radius: 15, scale: 1.5, damage: 8, range: 39, cooldown: 0.9 },
-  spitter: { name: "Spitter", health: 65, speed: 62, radius: 17, scale: 1.5, damage: 10, range: 300, cooldown: 2.5 },
-  bloater: { name: "Bloater", health: 135, speed: 48, radius: 25, scale: 1.5, damage: 32, range: 66, cooldown: 0 },
+  brute: { name: "Brute", health: 20, healthPerWave: 5, damage: 2.5, damagePerWave: 1, speed: 76, radius: 22, scale: 1.5, range: 54, cooldown: 1.45 },
+  crawler: { name: "Crawler", health: 450, healthPerWave: 50, damage: 25, damagePerWave: 5, speed: 126, radius: 15, scale: 1.5, range: 39, cooldown: 0.9 },
+  spitter: { name: "Spitter", health: 150, healthPerWave: 15, damage: 10, damagePerWave: 2.5, speed: 62, radius: 17, scale: 1.5, range: 300, cooldown: 2.5 },
+  bloater: { name: "Bloater", health: 1000, healthPerWave: 100, damage: 65, damagePerWave: 10, speed: 48, radius: 25, scale: 1.5, range: 66, cooldown: 0 },
   boss: { name: "Boss", health: 1400, speed: 55, radius: 48, scale: 1.5, damage: 24, range: 104, cooldown: 1.7 },
 });
 
 export class Enemy {
-  constructor(type, x, y, assets) {
+  constructor(type, x, y, assets, wave = 1) {
     const config = ENEMY_CONFIG[type];
     if (!config || !assets?.[type]) throw new TypeError(`Tipo ou assets de inimigo inválido: ${type}.`);
     this.type = type;
     this.name = config.name;
     this.x = x;
     this.y = y;
-    this.health = config.health;
-    this.maxHealth = config.health;
+    const waveLevel = Math.max(1, Math.floor(Number(wave) || 1));
+    const health = config.health + (config.healthPerWave ?? 0) * (waveLevel - 1);
+    this.health = health;
+    this.maxHealth = health;
     this.speed = config.speed;
     this.radius = config.radius;
-    this.damage = config.damage;
+    this.damage = config.damage + (config.damagePerWave ?? 0) * (waveLevel - 1);
     this.range = config.range;
     this.cooldown = config.cooldown;
     this.attackTimer = Math.random() * 0.4;
