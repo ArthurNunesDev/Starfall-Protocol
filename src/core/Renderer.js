@@ -13,7 +13,6 @@ export class Renderer {
     if (!(canvas instanceof HTMLCanvasElement)) throw new TypeError("Renderer exige um Canvas válido.");
     const context = canvas.getContext("2d", { alpha: false });
     if (!context) throw new Error("Não foi possível inicializar o contexto 2D do Canvas.");
-
     this.#canvas = canvas;
     this.#context = context;
     this.#stars = Array.from({ length: 150 }, (_, i) => ({
@@ -35,7 +34,6 @@ export class Renderer {
     this.#width = rect.width;
     this.#height = rect.height;
     this.#pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-
     const width = Math.round(this.#width * this.#pixelRatio);
     const height = Math.round(this.#height * this.#pixelRatio);
     if (this.#canvas.width !== width || this.#canvas.height !== height) {
@@ -45,7 +43,7 @@ export class Renderer {
     this.#context.setTransform(this.#pixelRatio, 0, 0, this.#pixelRatio, 0, 0);
   }
 
-  render({ world, player, enemies, camera }) {
+  render({ world, player, enemies, camera, elapsedTime = 0, enemyCount = 0, health = 100, maxHealth = 100, kills = 0 }) {
     const ctx = this.#context;
     ctx.setTransform(this.#pixelRatio, 0, 0, this.#pixelRatio, 0, 0);
     ctx.clearRect(0, 0, this.#width, this.#height);
@@ -57,6 +55,34 @@ export class Renderer {
     player.render(ctx);
     enemies?.render(ctx);
     ctx.restore();
+    this.#renderHud({ elapsedTime, enemyCount, health, maxHealth, kills });
+  }
+
+  #renderHud({ elapsedTime, enemyCount, health, maxHealth, kills }) {
+    const ctx = this.#context;
+    const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, "0");
+    const seconds = Math.floor(elapsedTime % 60).toString().padStart(2, "0");
+    const healthRatio = Math.max(0, health / maxHealth);
+    ctx.save();
+    ctx.fillStyle = "rgba(3, 10, 22, 0.82)";
+    ctx.fillRect(16, 16, 238, 76);
+    ctx.strokeStyle = "rgba(105, 229, 245, 0.35)";
+    ctx.strokeRect(16, 16, 238, 76);
+    ctx.font = "600 12px Rajdhani, sans-serif";
+    ctx.fillStyle = "#a9bdcf";
+    ctx.fillText("INTEGRIDADE DO OPERADOR", 28, 37);
+    ctx.fillStyle = "#071321";
+    ctx.fillRect(28, 47, 210, 9);
+    ctx.fillStyle = healthRatio > 0.35 ? "#65e4c1" : "#f16e79";
+    ctx.fillRect(28, 47, 210 * healthRatio, 9);
+    ctx.font = "700 13px Rajdhani, sans-serif";
+    ctx.fillStyle = "#e8f4ff";
+    ctx.fillText(`${Math.ceil(health)} / ${maxHealth}`, 28, 74);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#a9bdcf";
+    ctx.fillText(`TEMPO  ${minutes}:${seconds}`, this.#width - 20, 30);
+    ctx.fillText(`AMEAÇAS  ${enemyCount}   //   ELIMINAÇÕES  ${kills}`, this.#width - 20, 49);
+    ctx.restore();
   }
 
   #renderWorld(world, camera) {
@@ -67,7 +93,6 @@ export class Renderer {
     const right = Math.min(world.width, camera.x + this.#width + 80);
     const top = Math.max(0, Math.floor(camera.y / 80) * 80);
     const bottom = Math.min(world.height, camera.y + this.#height + 80);
-
     ctx.beginPath();
     ctx.strokeStyle = "rgba(75, 151, 183, 0.10)";
     ctx.lineWidth = 1;
@@ -89,7 +114,6 @@ export class Renderer {
       ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
       ctx.fill();
     }
-
     ctx.strokeStyle = "rgba(105, 229, 245, 0.5)";
     ctx.lineWidth = 3;
     ctx.strokeRect(0, 0, world.width, world.height);
