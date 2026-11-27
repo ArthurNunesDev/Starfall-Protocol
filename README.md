@@ -100,8 +100,15 @@ Acesse `http://localhost:8000`.
 **Etapa 3 — Jogador:** movimentação top-down, operador em pixel art com oito direções, animações de idle e corrida, arena de teste, câmera follow e limites do mapa. A sessão ativa é restaurada após recarregar a página; o perfil mantém a seleção e os desbloqueios.
 
 
-## Sistema inicial de inimigos
+## Sistema de inimigos e combate recebido
 
-- O Brute é criado próximo ao jogador e persegue sua posição com movimento top-down.
-- O carregador usa os atlas JSON e spritesheets PNG em `assets/sprites/enemies/`.
-- Os dados dos outros inimigos e do chefe ficam preparados para as próximas etapas; combate, dano e ondas ainda não estão implementados.
+- **Brute:** perseguição e ataque corpo a corpo com janela de impacto sincronizada à animação.
+- **Crawler:** movimentação rápida e ataques corpo a corpo em intervalos menores.
+- **Spitter:** mantém distância do operador e dispara projéteis direcionais.
+- **Bloater:** aproximação seguida de explosão em área.
+- **Boss:** surge após 60 segundos, possui vida ampliada, fase agressiva abaixo de 50% de vida, ataques corpo a corpo, golpe em área e rajada de projéteis.
+- Hordas adicionam inimigos em intervalos progressivamente menores, respeitando o limite de entidades ativas.
+- O operador possui 100 pontos de integridade, janela curta de invulnerabilidade após receber dano, HUD de vida/tempo/ameaças/eliminação e tela de derrota com reinício.
+- Os atlases JSON controlam os eventos de impacto das animações; as spritesheets são carregadas e validadas antes da partida.
+
+O sistema de armas do operador e a progressão de experiência ainda são etapas separadas.
