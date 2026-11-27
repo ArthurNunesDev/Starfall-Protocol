@@ -19,7 +19,7 @@ export class EnemyManager {
   }
 
   spawn(type, x, y) {
-    if (this.#enemies.length >= MAX_ENEMIES || !this.#assets?.[type]) return null;
+    if ((this.#enemies.length >= MAX_ENEMIES && type !== "boss") || !this.#assets?.[type]) return null;
     const enemy = new Enemy(type, x, y, this.#assets);
     this.#enemies.push(enemy);
     return enemy;
@@ -33,12 +33,15 @@ export class EnemyManager {
     this.spawn("bloater", Math.max(80, player.x - 360), Math.max(80, player.y - 180));
   }
 
-  update(player, deltaTime, world) {
-    this.#elapsed += deltaTime;
+  update(player, deltaTime, world, elapsedTime = this.#elapsed + deltaTime) {
+    this.#elapsed = elapsedTime;
     if (this.#elapsed >= this.#nextWave && this.#enemies.length < MAX_ENEMIES) {
       const type = REGULAR_TYPES[Math.floor(Math.random() * REGULAR_TYPES.length)];
       this.#spawnAroundPlayer(player, world, type);
-      this.#nextWave += Math.max(3.5, WAVE_INTERVAL - Math.min(3, this.#elapsed / 45));
+      const interval = Math.max(3.5, WAVE_INTERVAL - Math.min(3, this.#elapsed / 45));
+      do {
+        this.#nextWave += interval;
+      } while (this.#nextWave <= this.#elapsed);
     }
 
     if (!this.#bossSpawned && this.#elapsed >= BOSS_TIME) {
