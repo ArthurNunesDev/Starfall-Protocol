@@ -43,7 +43,7 @@ export class Renderer {
     this.#context.setTransform(this.#pixelRatio, 0, 0, this.#pixelRatio, 0, 0);
   }
 
-  render({ world, player, enemies, weapons, camera, elapsedTime = 0, enemyCount = 0, health = 100, maxHealth = 100, kills = 0 }) {
+  render({ world, player, enemies, weapons, camera, elapsedTime = 0, enemyCount = 0, health = 100, maxHealth = 100, kills = 0, wave = 1 }) {
     const ctx = this.#context;
     ctx.setTransform(this.#pixelRatio, 0, 0, this.#pixelRatio, 0, 0);
     ctx.clearRect(0, 0, this.#width, this.#height);
@@ -56,10 +56,10 @@ export class Renderer {
     weapons?.render(ctx);
     player.render(ctx);
     ctx.restore();
-    this.#renderHud({ elapsedTime, enemyCount, health, maxHealth, kills });
+    this.#renderHud({ elapsedTime, enemyCount, health, maxHealth, kills, wave });
   }
 
-  #renderHud({ elapsedTime, enemyCount, health, maxHealth, kills }) {
+  #renderHud({ elapsedTime, enemyCount, health, maxHealth, kills, wave }) {
     const ctx = this.#context;
     const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, "0");
     const seconds = Math.floor(elapsedTime % 60).toString().padStart(2, "0");
@@ -84,7 +84,7 @@ export class Renderer {
     ctx.fillText("ARMAMENTO  FUZIL DE PULSO", 28, 108);
     ctx.textAlign = "right";
     ctx.fillStyle = "#a9bdcf";
-    ctx.fillText(`TEMPO  ${minutes}:${seconds}`, this.#width - 20, 30);
+    ctx.fillText(`WAVE  ${wave} / 100   //   ${minutes}:${seconds}`, this.#width - 20, 30);
     ctx.fillText(`AMEAÇAS  ${enemyCount}   //   ELIMINAÇÕES  ${kills}`, this.#width - 20, 49);
     ctx.restore();
   }
