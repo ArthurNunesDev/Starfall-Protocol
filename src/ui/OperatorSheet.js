@@ -84,10 +84,8 @@ function renderOperator(operator) {
   article.setAttribute("aria-label", `Ficha de ${operator.name}`);
 
   const header = createElement("header", "operator-sheet__header");
-  const portrait = createElement("img", "operator-sheet__portrait");
-  portrait.src = operator.portrait;
-  portrait.alt = "";
-  portrait.loading = "lazy";
+  const portrait = createElement("span", "operator-sheet__portrait");
+  portrait.setAttribute("aria-hidden", "true");
   const identity = createElement("div", "operator-sheet__identity");
   identity.append(
     createElement("h2", "operator-sheet__name", operator.name),
