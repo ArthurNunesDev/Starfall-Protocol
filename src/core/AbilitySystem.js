@@ -75,7 +75,7 @@ export class AbilitySystem {
       this.#lastResourceWave = wave;
     }
 
-    if (input.consumePressed("KeyQ")) this.#activateRift(input, player, world, mouseWorldPosition);
+    if (input.consumePressed("KeyQ")) this.#activateRift(player, world, mouseWorldPosition);
     if (input.consumePressed("KeyZ")) this.#activatePulse(player, enemyManager, world);
     if (input.consumePressed("KeyX")) this.#activateOverload();
     if (input.consumePressed("KeyC")) this.#activateDrone();
@@ -112,7 +112,7 @@ export class AbilitySystem {
     }
   }
 
-  #activateRift(input, player, world, mouseWorldPosition) {
+  #activateRift(player, world, mouseWorldPosition) {
     if (this.#riftCharges <= 0) return;
     const targetX = mouseWorldPosition?.x ?? player.x + Math.cos(player.facingAngle) * RIFT_DISTANCE;
     const targetY = mouseWorldPosition?.y ?? player.y + Math.sin(player.facingAngle) * RIFT_DISTANCE;
