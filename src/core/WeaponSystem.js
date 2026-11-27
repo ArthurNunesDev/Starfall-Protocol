@@ -1,12 +1,12 @@
 const WEAPON = Object.freeze({
   id: "pulse-rifle",
   name: "Fuzil de Pulso",
-  description: "Arma automática de energia. Dispara contra o inimigo mais próximo.",
+  description: "Arma automática de energia. Prioriza inimigos sob o cursor dentro do alcance.",
   damage: 1,
   fireInterval: 1.5,
   projectileSpeed: 680,
-  projectileRange: 640,
-  targetRange: 620,
+  projectileRange: 340,
+  targetRange: 300,
   projectileRadius: 4,
 });
 
@@ -22,20 +22,38 @@ export class WeaponSystem {
     this.#onEnemyDefeated = onEnemyDefeated;
   }
 
-  update(player, enemyManager, deltaTime) {
+  update(player, enemyManager, deltaTime, mouseWorldPosition = null) {
     this.#cooldown = Math.max(0, this.#cooldown - deltaTime);
     const targets = enemyManager?.targets ?? [];
     let target = null;
+    let hoveredTarget = null;
+    let hoveredDistance = Infinity;
     let nearestDistance = WEAPON.targetRange;
 
     for (const enemy of targets) {
+      if (enemy.dead || enemy.removed || enemy.exploding) continue;
       const distance = Math.hypot(enemy.x - player.x, enemy.y - player.y);
-      if (enemy.exploding || distance >= nearestDistance) continue;
+      if (distance > WEAPON.targetRange) continue;
+
+      if (mouseWorldPosition) {
+        const cursorDistance = Math.hypot(
+          enemy.x - mouseWorldPosition.x,
+          enemy.y - mouseWorldPosition.y,
+        );
+        const hitRadius = Math.max(enemy.radius, 18);
+        if (cursorDistance <= hitRadius && cursorDistance < hoveredDistance) {
+          hoveredDistance = cursorDistance;
+          hoveredTarget = enemy;
+        }
+      }
+
       if (distance < nearestDistance) {
         nearestDistance = distance;
         target = enemy;
       }
     }
+
+    if (hoveredTarget) target = hoveredTarget;
 
     if (target) {
       const angle = Math.atan2(target.y - player.y, target.x - player.x);
