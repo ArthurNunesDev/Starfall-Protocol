@@ -1,6 +1,5 @@
 import { Enemy } from "./Enemy.js";
 
-const MAX_ENEMIES = 70;
 const WAVE_DURATION = 45;
 const MAX_WAVES = 100;
 const FIRST_WAVE_TYPES = ["brute"];
@@ -25,7 +24,7 @@ export class EnemyManager {
   }
 
   spawn(type, x, y) {
-    if (this.#enemies.length >= MAX_ENEMIES || !this.#assets?.[type]) return null;
+    if (!this.#assets?.[type]) return null;
     const enemy = new Enemy(type, x, y, this.#assets);
     this.#enemies.push(enemy);
     return enemy;
@@ -42,7 +41,7 @@ export class EnemyManager {
 
     if (this.#wave <= MAX_WAVES && this.#elapsed < MAX_WAVES * WAVE_DURATION) {
       this.#spawnTimer -= deltaTime;
-      if (this.#spawnTimer <= 0 && this.#enemies.length < MAX_ENEMIES) {
+      if (this.#spawnTimer <= 0) {
         this.#spawnGroup(player, world);
         this.#spawnTimer = this.#getSpawnInterval(this.#wave);
       }
@@ -74,22 +73,21 @@ export class EnemyManager {
   }
 
   #getSpawnInterval(wave) {
-    // Começa em 8,5 s e acelera gradualmente até 1,5 s nas waves finais.
-    return Math.max(1.5, 8.5 - (wave - 1) * 0.071);
+    // Reduz linearmente de 8 s na wave 1 para 0,75 s na wave 100.
+    const progress = (wave - 1) / (MAX_WAVES - 1);
+    return 8 - progress * 7.25;
   }
 
   #getGroupSize(wave) {
-    // Aumenta um inimigo a cada 10 waves, chegando a grupos de 10.
-    return Math.min(10, 1 + Math.floor((wave - 1) / 10));
+    // Cresce linearmente de 1 inimigo na wave 1 para 25 na wave 100.
+    const progress = (wave - 1) / (MAX_WAVES - 1);
+    return 1 + Math.floor(progress * 24);
   }
 
   #spawnGroup(player, world) {
     const availableTypes = this.#getAvailableTypes(this.#wave);
     const groupSize = this.#getGroupSize(this.#wave);
-    const remainingSlots = MAX_ENEMIES - this.#enemies.length;
-    const amount = Math.min(groupSize, remainingSlots);
-
-    for (let i = 0; i < amount; i += 1) {
+    for (let i = 0; i < groupSize; i += 1) {
       const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
       this.#spawnAroundPlayer(player, world, type, 300 + Math.random() * 100);
     }
