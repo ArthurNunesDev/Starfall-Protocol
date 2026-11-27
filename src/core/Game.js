@@ -16,6 +16,7 @@ const SAVE_INTERVAL = 1;
 export class Game {
   #input = new Input();
   #renderer;
+  #canvas;
   #spriteAssets = null;
   #enemyAssets = null;
   #enemies = null;
@@ -33,6 +34,7 @@ export class Game {
   #weapons;
 
   constructor(canvas, profile = null) {
+    this.#canvas = canvas;
     this.#renderer = new Renderer(canvas);
     this.#profile = profile;
     this.#weapons = new WeaponSystem({
@@ -91,7 +93,7 @@ export class Game {
     }
 
     this.#enemies?.spawnInitialWave(this.#player, WORLD);
-    this.#input.attach();
+    this.#input.attach(this.#canvas);
     this.#running = true;
     this.#loop.start();
   }
@@ -129,7 +131,11 @@ export class Game {
     this.#player.update(this.#input, deltaTime, WORLD);
     this.#elapsedTime += deltaTime;
     this.#enemies?.update(this.#player, deltaTime, WORLD, this.#elapsedTime);
-    this.#weapons.update(this.#player, this.#enemies, deltaTime);
+    const mouse = this.#input.mousePosition;
+    const mouseWorldPosition = mouse
+      ? { x: mouse.x + this.#camera.x, y: mouse.y + this.#camera.y }
+      : null;
+    this.#weapons.update(this.#player, this.#enemies, deltaTime, mouseWorldPosition);
     this.#camera.follow(this.#player, this.#renderer.width, this.#renderer.height, WORLD, deltaTime);
     this.#saveAccumulator += deltaTime;
 
