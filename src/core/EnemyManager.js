@@ -28,7 +28,7 @@ export class EnemyManager {
 
   spawn(type, x, y) {
     if (!this.#assets?.[type]) return null;
-    const enemy = new Enemy(type, x, y, this.#assets);
+    const enemy = new Enemy(type, x, y, this.#assets, this.#wave);
     this.#enemies.push(enemy);
     return enemy;
   }
