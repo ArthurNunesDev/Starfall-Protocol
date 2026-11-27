@@ -3,7 +3,7 @@ import { directionAngle, directionFromAngle, drawSoldierFrame, SpriteAnimator } 
 const SPEED = 250;
 const RADIUS = 15;
 const SPRITE_SCALE = 1.5;
-const MAX_HEALTH = 100;
+const MAX_HEALTH = 10;
 const DAMAGE_COOLDOWN = 0.55;
 const TURN_RESPONSE = 16;
 const SIXTEEN_WAY_STEP = Math.PI / 8;
