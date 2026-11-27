@@ -290,7 +290,7 @@ export class AbilitySystem {
         if (enemy.exploding || enemy.dead) continue;
         if (distanceToSegment(enemy.x, enemy.y, effect.startX, effect.startY, effect.endX, effect.endY)
           <= enemy.radius + 10) {
-          this.#damageEnemy(enemy, 2 * deltaTime, enemyManager);
+          this.#damageEnemy(enemy, 2 * deltaTime * (effect.empowered ? 1.25 : 1), enemyManager);
         }
       }
     }
