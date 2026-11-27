@@ -118,9 +118,9 @@ export class Game {
   update(deltaTime) {
     if (!this.#running) return;
     this.#player.update(this.#input, deltaTime, WORLD);
-    this.#enemies?.update(this.#player, deltaTime, WORLD);
-    this.#camera.follow(this.#player, this.#renderer.width, this.#renderer.height, WORLD, deltaTime);
     this.#elapsedTime += deltaTime;
+    this.#enemies?.update(this.#player, deltaTime, WORLD, this.#elapsedTime);
+    this.#camera.follow(this.#player, this.#renderer.width, this.#renderer.height, WORLD, deltaTime);
     this.#saveAccumulator += deltaTime;
 
     if (this.#player.health <= 0) {
