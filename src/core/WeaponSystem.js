@@ -63,7 +63,7 @@ export class WeaponSystem {
 
     if (target) {
       aimAngle = Math.atan2(target.y - player.y, target.x - player.x);
-      if (!firingPaused && this.#cooldown <= 0) this.#fire(player, aimAngle, damageMultiplier, currentFireInterval);
+      if (!firingPaused && this.#cooldown <= 0) this.#fire(player, aimAngle, damageMultiplier, currentFireInterval, modifiers.ultimateActive === true);
     } else if (mouseWorldPosition) {
       aimAngle = Math.atan2(
         mouseWorldPosition.y - player.y,
@@ -76,7 +76,7 @@ export class WeaponSystem {
     this.#updateProjectiles(targets, deltaTime);
   }
 
-  #fire(player, angle, damageMultiplier, fireInterval) {
+  #fire(player, angle, damageMultiplier, fireInterval, empowered) {
     this.#cooldown = fireInterval;
     const muzzleOffset = 25;
     this.#projectiles.push({
@@ -87,7 +87,7 @@ export class WeaponSystem {
       damage: WEAPON.damage * damageMultiplier,
       radius: WEAPON.projectileRadius,
       remaining: WEAPON.projectileRange,
-      empowered: modifiers.ultimateActive === true,
+      empowered,
     });
 
     if (!this.#unlocked) {
