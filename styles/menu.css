@@ -206,3 +206,10 @@ button.character-card:hover,button.character-card:focus-visible,.character-card.
 .death-restart-button{width:min(100%,330px);grid-template-columns:1fr 24px}
 .death-actions .back-button{margin-top:5px}
 @media(max-width:640px){.death-panel{padding:32px 20px}.death-symbol{width:62px;height:62px;margin-bottom:24px}.death-symbol span{font-size:3rem}.death-status{font-size:.53rem;letter-spacing:.1em}}
+
+
+/* Seleção de personagem com ficha completa e rolagem independente. */
+.character-select-screen { display: block; min-height: 0; overflow-y: auto; }
+.character-panel { width: min(100%, 1180px); margin: 0 auto; }
+.operator-sheet-host { margin-top: 22px; }
+.character-select-screen .character-actions { margin-bottom: 8px; }
