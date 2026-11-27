@@ -43,7 +43,7 @@ export class Renderer {
     this.#context.setTransform(this.#pixelRatio, 0, 0, this.#pixelRatio, 0, 0);
   }
 
-  render({ world, player, enemies, weapons, camera, elapsedTime = 0, enemyCount = 0, health = 100, maxHealth = 100, kills = 0, wave = 1 }) {
+  render({ world, player, enemies, weapons, camera, elapsedTime = 0, enemyCount = 0, kills = 0, wave = 1 }) {
     const ctx = this.#context;
     ctx.setTransform(this.#pixelRatio, 0, 0, this.#pixelRatio, 0, 0);
     ctx.clearRect(0, 0, this.#width, this.#height);
@@ -56,10 +56,10 @@ export class Renderer {
     weapons?.render(ctx);
     player.render(ctx);
     ctx.restore();
-    this.#renderHud({ elapsedTime, enemyCount, health, maxHealth, kills, wave });
+    this.#renderHud({ elapsedTime, enemyCount, kills, wave });
   }
 
-  #renderHud({ elapsedTime, enemyCount, health, maxHealth, kills, wave }) {
+  #renderHud({ elapsedTime, enemyCount, kills, wave }) {
     const ctx = this.#context;
     const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, "0");
     const seconds = Math.floor(elapsedTime % 60).toString().padStart(2, "0");
