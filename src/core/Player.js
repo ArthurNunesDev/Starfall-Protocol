@@ -19,7 +19,10 @@ export class Player {
   #animator = null;
   #damageCooldown = 0;
   #facingAngle = Math.PI / 2;
+  #emergencyShield = 0;
+  #emergencyShieldTimer = 0;
   health = MAX_HEALTH;
+  shield = 0;
   radius = RADIUS;
   damageFlash = 0;
 
@@ -34,6 +37,20 @@ export class Player {
     this.#spriteAssets = assets;
     this.#animator = assets ? new SpriteAnimator(assets.atlas) : null;
     this.#syncSpriteDirection();
+  }
+
+  get facingAngle() { return this.#facingAngle; }
+  get emergencyShield() { return this.#emergencyShield; }
+  get totalShield() { return this.shield + this.#emergencyShield; }
+
+  addShield(amount) {
+    if (Number.isFinite(amount) && amount > 0) this.shield += amount;
+  }
+
+  addEmergencyShield(amount, duration) {
+    if (!Number.isFinite(amount) || amount <= 0 || !Number.isFinite(duration) || duration <= 0) return;
+    this.#emergencyShield += amount;
+    this.#emergencyShieldTimer = Math.max(this.#emergencyShieldTimer, duration);
   }
 
   setFacingAngle(angle, deltaTime) {
@@ -53,7 +70,14 @@ export class Player {
 
   takeDamage(amount) {
     if (!Number.isFinite(amount) || amount <= 0 || this.#damageCooldown > 0 || this.health <= 0) return false;
-    this.health = Math.max(0, this.health - amount);
+    let remainingDamage = amount;
+    const emergencyAbsorbed = Math.min(this.#emergencyShield, remainingDamage);
+    this.#emergencyShield -= emergencyAbsorbed;
+    remainingDamage -= emergencyAbsorbed;
+    const shieldAbsorbed = Math.min(this.shield, remainingDamage);
+    this.shield -= shieldAbsorbed;
+    remainingDamage -= shieldAbsorbed;
+    if (remainingDamage > 0) this.health = Math.max(0, this.health - remainingDamage);
     this.#damageCooldown = DAMAGE_COOLDOWN;
     this.damageFlash = 0.18;
     return true;
@@ -61,6 +85,8 @@ export class Player {
 
   update(input, deltaTime, world) {
     this.#damageCooldown = Math.max(0, this.#damageCooldown - deltaTime);
+    this.#emergencyShieldTimer = Math.max(0, this.#emergencyShieldTimer - deltaTime);
+    if (this.#emergencyShieldTimer === 0) this.#emergencyShield = 0;
     this.damageFlash = Math.max(0, this.damageFlash - deltaTime);
 
     let dx = Number(input.isPressed("KeyD") || input.isPressed("ArrowRight"))
@@ -124,6 +150,18 @@ export class Player {
     ctx.fillStyle = "#172b3e";
     ctx.fillRect(5, 4, 7, 5);
     ctx.restore();
+
+    if (this.totalShield > 0) {
+      ctx.save();
+      ctx.strokeStyle = this.#emergencyShield > 0 ? "rgba(255, 211, 112, 0.9)" : "rgba(93, 221, 255, 0.75)";
+      ctx.shadowColor = ctx.strokeStyle;
+      ctx.shadowBlur = 12;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 28, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
 
     const healthRatio = Math.max(0, Math.min(1, this.health / MAX_HEALTH));
     const healthBarWidth = 42;
