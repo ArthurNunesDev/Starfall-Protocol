@@ -111,6 +111,7 @@ export class Game {
   stop() {
     if (!this.#running) return;
     this.#saveSession();
+    this.#abilities.cancelCharge();
     this.#running = false;
     this.#loop.stop();
     this.#input.detach();
