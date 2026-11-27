@@ -403,6 +403,11 @@ export class AbilitySystem {
     }
   }
 
+  cancelCharge() {
+    this.#ultimateCharging = false;
+    this.#ultimateCharge = 0;
+  }
+
   reset() {
     this.#cooldowns = { pulse: 0, overload: 0, drone: 0, ultimate: 0 };
     this.#riftCharges = MAX_RIFT_CHARGES;
