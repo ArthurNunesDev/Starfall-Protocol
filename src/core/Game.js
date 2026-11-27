@@ -29,19 +29,19 @@ export class Game {
   #saveAccumulator = 0;
   #pendingCamera = null;
   #characterId = "operator-01";
-  #gameOverOverlay;
+  #onGameOver;
   #profile;
   #weapons;
 
-  constructor(canvas, profile = null) {
+  constructor(canvas, profile = null, onGameOver = null) {
     this.#canvas = canvas;
     this.#renderer = new Renderer(canvas);
     this.#profile = profile;
+    this.#onGameOver = typeof onGameOver === "function" ? onGameOver : () => {};
     this.#weapons = new WeaponSystem({
       onWeaponUnlocked: (weapon) => this.#profile?.unlockWeapon(weapon),
       onEnemyDefeated: (enemy) => this.#profile?.recordEnemyDefeat(enemy),
     });
-    this.#gameOverOverlay = document.querySelector("#game-over-overlay");
     this.#loop = new GameLoop({
       update: (deltaTime) => this.update(deltaTime),
       render: () => this.render(),
@@ -81,7 +81,6 @@ export class Game {
   start(characterId = this.#characterId) {
     if (this.#running) return;
     if (typeof characterId === "string" && characterId.trim()) this.#characterId = characterId;
-    if (this.#gameOverOverlay) this.#gameOverOverlay.hidden = true;
     this.#renderer.resize();
 
     if (this.#pendingCamera) {
@@ -123,7 +122,6 @@ export class Game {
     this.#enemies = this.#enemyAssets ? new EnemyManager(this.#enemyAssets) : null;
     this.#weapons.reset();
     this.#camera = new Camera();
-    if (this.#gameOverOverlay) this.#gameOverOverlay.hidden = true;
   }
 
   update(deltaTime) {
@@ -144,10 +142,7 @@ export class Game {
       this.#loop.stop();
       this.#input.detach();
       this.#session.clear();
-      if (this.#gameOverOverlay) {
-        this.#gameOverOverlay.hidden = false;
-        this.#gameOverOverlay.querySelector('[data-action="restart-game"]')?.focus();
-      }
+      this.#onGameOver();
       return;
     }
 
