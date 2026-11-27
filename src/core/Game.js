@@ -163,6 +163,7 @@ export class Game {
       health: this.#player.health,
       maxHealth: MAX_HEALTH,
       kills: this.#enemies?.kills ?? 0,
+      wave: this.#enemies?.wave ?? Math.min(100, Math.floor(this.#elapsedTime / 45) + 1),
     });
   }
 
