@@ -43,7 +43,7 @@ export class Renderer {
     this.#context.setTransform(this.#pixelRatio, 0, 0, this.#pixelRatio, 0, 0);
   }
 
-  render({ world, player, enemies, camera, elapsedTime = 0, enemyCount = 0, health = 100, maxHealth = 100, kills = 0 }) {
+  render({ world, player, enemies, weapons, camera, elapsedTime = 0, enemyCount = 0, health = 100, maxHealth = 100, kills = 0 }) {
     const ctx = this.#context;
     ctx.setTransform(this.#pixelRatio, 0, 0, this.#pixelRatio, 0, 0);
     ctx.clearRect(0, 0, this.#width, this.#height);
@@ -52,8 +52,9 @@ export class Renderer {
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
     this.#renderWorld(world, camera);
-    player.render(ctx);
     enemies?.render(ctx);
+    weapons?.render(ctx);
+    player.render(ctx);
     ctx.restore();
     this.#renderHud({ elapsedTime, enemyCount, health, maxHealth, kills });
   }
@@ -65,9 +66,9 @@ export class Renderer {
     const healthRatio = Math.max(0, health / maxHealth);
     ctx.save();
     ctx.fillStyle = "rgba(3, 10, 22, 0.82)";
-    ctx.fillRect(16, 16, 238, 76);
+    ctx.fillRect(16, 16, 238, 104);
     ctx.strokeStyle = "rgba(105, 229, 245, 0.35)";
-    ctx.strokeRect(16, 16, 238, 76);
+    ctx.strokeRect(16, 16, 238, 104);
     ctx.font = "600 12px Rajdhani, sans-serif";
     ctx.fillStyle = "#a9bdcf";
     ctx.fillText("INTEGRIDADE DO OPERADOR", 28, 37);
@@ -78,6 +79,9 @@ export class Renderer {
     ctx.font = "700 13px Rajdhani, sans-serif";
     ctx.fillStyle = "#e8f4ff";
     ctx.fillText(`${Math.ceil(health)} / ${maxHealth}`, 28, 74);
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#79eaff";
+    ctx.fillText("ARMAMENTO  FUZIL DE PULSO", 28, 108);
     ctx.textAlign = "right";
     ctx.fillStyle = "#a9bdcf";
     ctx.fillText(`TEMPO  ${minutes}:${seconds}`, this.#width - 20, 30);
