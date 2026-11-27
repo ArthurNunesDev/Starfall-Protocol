@@ -91,6 +91,7 @@ export class Player {
     if (this.#spriteAssets && this.#animator) {
       drawSoldierFrame(ctx, this.#spriteAssets, this.#animator, this.x, this.y, SPRITE_SCALE);
     } else {
+      ctx.save();
       ctx.translate(Math.round(this.x), Math.round(this.y));
       ctx.fillStyle = "rgba(0, 0, 0, 0.42)";
       ctx.fillRect(-10, 11, 20, 7);
@@ -108,6 +109,7 @@ export class Player {
       ctx.shadowBlur = 0;
       ctx.fillStyle = "#d9fbff";
       ctx.fillRect(-3, -7, 6, 10);
+      ctx.restore();
     }
 
     ctx.translate(Math.round(this.x), Math.round(this.y));
