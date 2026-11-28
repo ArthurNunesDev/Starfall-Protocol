@@ -63,7 +63,7 @@ export class WeaponSystem {
 
     if (target) {
       aimAngle = Math.atan2(target.y - player.y, target.x - player.x);
-      if (!firingPaused && this.#cooldown <= 0) this.#fire(player, aimAngle, damageMultiplier, currentFireInterval, modifiers.ultimateActive === true);
+      if (!firingPaused && this.#cooldown <= 0) this.#fire(player, aimAngle, damageMultiplier, currentFireInterval, modifiers.ultimateTier ?? null);
     } else if (mouseWorldPosition) {
       aimAngle = Math.atan2(
         mouseWorldPosition.y - player.y,
@@ -76,7 +76,7 @@ export class WeaponSystem {
     this.#updateProjectiles(targets, deltaTime);
   }
 
-  #fire(player, angle, damageMultiplier, fireInterval, empowered) {
+  #fire(player, angle, damageMultiplier, fireInterval, buffTier) {
     this.#cooldown = fireInterval;
     const muzzleOffset = 25;
     this.#projectiles.push({
@@ -87,7 +87,8 @@ export class WeaponSystem {
       damage: WEAPON.damage * damageMultiplier,
       radius: WEAPON.projectileRadius,
       remaining: WEAPON.projectileRange,
-      empowered,
+      empowered: buffTier !== null,
+      buffTier,
     });
 
     if (!this.#unlocked) {
@@ -133,15 +134,15 @@ export class WeaponSystem {
   render(ctx) {
     for (const projectile of this.#projectiles) {
       ctx.save();
-      const color = projectile.empowered ? "#ff3158" : "#58eaff";
+      const color = projectile.buffTier === "green" ? "#39ff88" : projectile.empowered ? "#ff3158" : "#58eaff";
       ctx.shadowColor = color;
       ctx.shadowBlur = projectile.empowered ? 24 : 16;
-      ctx.fillStyle = projectile.empowered ? "#fff0f3" : "#a9f7ff";
+      ctx.fillStyle = projectile.buffTier === "green" ? "#e5ffef" : projectile.empowered ? "#fff0f3" : "#a9f7ff";
       ctx.beginPath();
       ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
       ctx.fill();
       if (projectile.empowered) {
-        ctx.strokeStyle = "#ff1744";
+        ctx.strokeStyle = projectile.buffTier === "green" ? "#19ff79" : "#ff1744";
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(projectile.x, projectile.y, projectile.radius + 3, 0, Math.PI * 2);
