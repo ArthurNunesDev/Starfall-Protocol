@@ -139,17 +139,23 @@ export class Player {
 
     ctx.translate(Math.round(this.x), Math.round(this.y));
     ctx.rotate(this.#facingAngle);
-    const chargedWeapon = weaponVisualState?.ultimateRed === true;
-    ctx.shadowColor = chargedWeapon ? "rgba(255, 35, 75, 0.95)" : "rgba(68, 220, 255, 0.7)";
+    const chargedRed = weaponVisualState?.ultimateRed === true;
+    const chargedGreen = weaponVisualState?.ultimateGreen === true;
+    const chargedWeapon = chargedRed || chargedGreen;
+    const weaponGlow = chargedGreen ? "rgba(57, 255, 136, 0.95)" : "rgba(255, 35, 75, 0.95)";
+    const weaponBody = chargedGreen ? "#145b35" : "#5a1729";
+    const weaponCore = chargedGreen ? "#39ff88" : "#ff294f";
+    const weaponTip = chargedGreen ? "#d7ffe7" : "#ffd5dc";
+    ctx.shadowColor = chargedWeapon ? weaponGlow : "rgba(68, 220, 255, 0.7)";
     ctx.shadowBlur = chargedWeapon ? 22 : 8;
-    ctx.fillStyle = chargedWeapon ? "#5a1729" : "#263f55";
+    ctx.fillStyle = chargedWeapon ? weaponBody : "#263f55";
     ctx.fillRect(1, -5, 22, 10);
-    ctx.fillStyle = chargedWeapon ? "#ff294f" : "#8deeff";
+    ctx.fillStyle = chargedWeapon ? weaponCore : "#8deeff";
     ctx.fillRect(10, -3, 15, 6);
-    ctx.fillStyle = chargedWeapon ? "#ffd5dc" : "#d7faff";
+    ctx.fillStyle = chargedWeapon ? weaponTip : "#d7faff";
     ctx.fillRect(22, -2, 7, 4);
     if (chargedWeapon) {
-      ctx.fillStyle = "rgba(255, 55, 86, 0.8)";
+      ctx.fillStyle = chargedGreen ? "rgba(57, 255, 136, 0.8)" : "rgba(255, 55, 86, 0.8)";
       ctx.fillRect(5, -7, 14, 2);
     }
     ctx.fillStyle = "#172b3e";
