@@ -144,6 +144,7 @@ export class AbilitySystem {
       age: 0,
       duration: 2,
       empowered,
+      buffTier: this.#ultimateBuffTier,
       damageMultiplier,
     });
     this.#riftCharges -= 1;
@@ -437,7 +438,7 @@ export class AbilitySystem {
         ctx.stroke();
         ctx.setLineDash([7, 12]);
         ctx.lineDashOffset = -effect.age * 70;
-        ctx.strokeStyle = effect.empowered ? "#ffe1e7" : "#d8fbff";
+        ctx.strokeStyle = effect.buffTier === "green" ? "#e5ffef" : effect.empowered ? "#ffe1e7" : "#d8fbff";
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(effect.startX, effect.startY);
