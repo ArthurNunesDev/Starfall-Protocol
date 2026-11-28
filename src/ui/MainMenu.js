@@ -87,6 +87,9 @@ export class MainMenu {
   };
 
   #handleKeydown = (event) => {
+    // Deixa o Escape fechar primeiro a ficha modal, sem sair da seleção de personagem.
+    if (event.key === "Escape" && document.querySelector(".operator-sheet-dialog[open]")) return;
+
     if (event.key === "Escape" && this.#screenManager.currentScreen === "game-screen") {
       const viewport = document.querySelector(".game-viewport");
       if (document.fullscreenElement === viewport) {
