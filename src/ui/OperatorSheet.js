@@ -55,7 +55,7 @@ function renderUltimate(ultimate) {
 
   const charge = createElement("div", "operator-charge");
   charge.setAttribute("role", "img");
-  charge.setAttribute("aria-label", "Escala de carga: até 5 segundos, carga normal; acima de 5 segundos, laser vermelho.");
+  charge.setAttribute("aria-label", "Escala de carga: até 5 segundos, laser normal; acima de 5 e antes de 10 segundos, estágio vermelho; aos 10 segundos, estágio verde.");
   const track = createElement("div", "operator-charge__track");
   for (const phase of ultimate.phases) {
     const segment = createElement("div", `operator-charge__phase operator-charge__phase--${phase.color}`, phase.label);
@@ -69,7 +69,7 @@ function renderUltimate(ultimate) {
 
   const buff = createElement("section", "operator-buff");
   buff.append(
-    createElement("h5", "operator-buff__title", `Buff por ${ultimate.buff.duration} segundos`),
+    createElement("h5", "operator-buff__title", `Aprimoramento por ${ultimate.buff.duration} segundos`),
     createElement("p", "operator-buff__trigger", `Ativação: ${ultimate.buff.trigger}.`),
     renderStats(ultimate.buff.effects),
     createElement("p", "operator-buff__end", ultimate.buff.end),
@@ -121,6 +121,37 @@ function renderOperator(operator) {
   return article;
 }
 
+function renderPreview(operator) {
+  const preview = createElement("section", "operator-sheet-preview");
+  preview.setAttribute("aria-label", `Resumo de ${operator.name}`);
+
+  const portrait = createElement("span", "operator-sheet-preview__portrait");
+  portrait.setAttribute("aria-hidden", "true");
+
+  const identity = createElement("div", "operator-sheet-preview__identity");
+  identity.append(
+    createElement("strong", "operator-sheet-preview__name", operator.name),
+    createElement("span", "operator-sheet-preview__class", `CLASSE // ${operator.className}`),
+    createElement("p", "operator-sheet-preview__summary", operator.summary),
+  );
+
+  const quickStats = createElement("div", "operator-sheet-preview__stats");
+  for (const item of operator.previewStats) {
+    const stat = createElement("div", "operator-sheet-preview__stat");
+    stat.append(
+      createElement("span", "", item.label),
+      createElement("strong", "", item.value),
+    );
+    quickStats.append(stat);
+  }
+
+  const button = createElement("button", "operator-sheet-preview__button", "VER MAIS");
+  button.type = "button";
+  button.setAttribute("aria-haspopup", "dialog");
+  preview.append(portrait, identity, quickStats, button);
+  return { preview, button };
+}
+
 export class OperatorSheet {
   #container;
 
@@ -132,10 +163,33 @@ export class OperatorSheet {
   }
 
   show(operator) {
-    if (!operator || typeof operator.name !== "string" || !Array.isArray(operator.abilities)) {
+    if (!operator || typeof operator.name !== "string"
+      || !Array.isArray(operator.abilities) || !Array.isArray(operator.previewStats)) {
       throw new TypeError("Dados inválidos para renderizar a ficha do operador.");
     }
-    this.#container.replaceChildren(renderOperator(operator));
+
+    const { preview, button } = renderPreview(operator);
+    const dialog = createElement("dialog", "operator-sheet-dialog");
+    dialog.setAttribute("aria-label", `Ficha completa de ${operator.name}`);
+
+    const dialogHeader = createElement("header", "operator-sheet-dialog__header");
+    const title = createElement("span", "operator-sheet-dialog__eyebrow", "ARQUIVO DE OPERADOR // FICHA TÉCNICA");
+    const closeButton = createElement("button", "operator-sheet-dialog__close", "FECHAR");
+    closeButton.type = "button";
+    closeButton.setAttribute("aria-label", "Fechar ficha do operador");
+    closeButton.addEventListener("click", () => dialog.close());
+    dialogHeader.append(title, closeButton);
+
+    dialog.append(dialogHeader, renderOperator(operator));
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    button.addEventListener("click", () => {
+      if (!dialog.open) dialog.showModal();
+    });
+
+    this.#container.replaceChildren(preview, dialog);
   }
 
   clear() {
