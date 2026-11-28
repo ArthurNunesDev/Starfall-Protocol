@@ -39,6 +39,7 @@ export class AbilitySystem {
   #riftRechargeTimer = 0;
   #overloadTimer = 0;
   #ultimateBuffTimer = 0;
+  #ultimateBuffTier = null;
   #ultimateCharging = false;
   #ultimateCharge = 0;
   #lastWave = 0;
@@ -62,6 +63,7 @@ export class AbilitySystem {
     }
     this.#overloadTimer = Math.max(0, this.#overloadTimer - dt);
     this.#ultimateBuffTimer = Math.max(0, this.#ultimateBuffTimer - dt);
+    if (this.#ultimateBuffTimer <= 0) this.#ultimateBuffTier = null;
     this.#updateRiftRecharge(dt);
     this.#updateEffects(dt);
 
@@ -132,6 +134,7 @@ export class AbilitySystem {
     player.x = endX;
     player.y = endY;
     const empowered = this.#ultimateBuffTimer > 0;
+    const damageMultiplier = this.#getBuffDamageMultiplier();
     this.#effects.push({
       type: "trail",
       startX,
@@ -141,6 +144,7 @@ export class AbilitySystem {
       age: 0,
       duration: 2,
       empowered,
+      damageMultiplier,
     });
     this.#riftCharges -= 1;
     if (this.#riftCharges < MAX_RIFT_CHARGES && this.#riftRechargeTimer <= 0) {
@@ -152,7 +156,7 @@ export class AbilitySystem {
     if (this.#cooldowns.pulse > 0) return;
     this.#cooldowns.pulse = 8;
     const empowered = this.#ultimateBuffTimer > 0;
-    const damageMultiplier = empowered ? 1.25 : 1;
+    const damageMultiplier = this.#getBuffDamageMultiplier();
     this.#effects.push({
       type: "pulse",
       x: player.x,
@@ -160,8 +164,9 @@ export class AbilitySystem {
       age: 0,
       duration: 0.42,
       radius: PULSE_RADIUS,
-      color: empowered ? "#ff3158" : "#65eaff",
+      color: this.#ultimateBuffTier === "green" ? "#39ff88" : empowered ? "#ff3158" : "#65eaff",
       empowered,
+      buffTier: this.#ultimateBuffTier,
     });
 
     for (const enemy of enemyManager?.targets ?? []) {
@@ -225,6 +230,7 @@ export class AbilitySystem {
         }
         if (target) {
           const empowered = this.#ultimateBuffTimer > 0;
+          const buffTier = this.#ultimateBuffTier;
           this.#effects.push({
             type: "drone-shot",
             x1: drone.x,
@@ -234,8 +240,9 @@ export class AbilitySystem {
             age: 0,
             duration: 0.12,
             empowered,
+            buffTier,
           });
-          this.#damageEnemy(target, DRONE_DAMAGE * (empowered ? 1.25 : 1), enemyManager);
+          this.#damageEnemy(target, DRONE_DAMAGE * this.#getBuffDamageMultiplier(), enemyManager);
         }
       }
     }
@@ -245,7 +252,9 @@ export class AbilitySystem {
   #fireUltimate(player, enemyManager, mouseWorldPosition) {
     if (!this.#ultimateCharging) return;
     const charge = this.#ultimateCharge;
-    const damage = 20 + 10 * charge;
+    const fullyCharged = charge >= ULTIMATE_MAX_CHARGE;
+    const buffTier = fullyCharged ? "green" : charge > 5 ? "red" : null;
+    const damage = (20 + 10 * charge) * (fullyCharged ? 1.45 : 1);
     const targets = (enemyManager?.targets ?? []).filter((enemy) => !enemy.exploding);
     let target = null;
 
@@ -275,13 +284,17 @@ export class AbilitySystem {
         y2: target.y,
         age: 0,
         duration: 0.32,
-        red: charge > 5,
+        red: buffTier === "red",
+        green: buffTier === "green",
         chargeRatio: clamp(charge / ULTIMATE_MAX_CHARGE, 0, 1),
       });
       this.#damageEnemy(target, damage, enemyManager);
     }
 
-    if (charge > 5) this.#ultimateBuffTimer = ULTIMATE_BUFF_DURATION;
+    if (buffTier) {
+      this.#ultimateBuffTimer = ULTIMATE_BUFF_DURATION;
+      this.#ultimateBuffTier = buffTier;
+    }
     this.#cooldowns.ultimate = ULTIMATE_COOLDOWN;
     this.#ultimateCharging = false;
     this.#ultimateCharge = 0;
@@ -295,7 +308,7 @@ export class AbilitySystem {
         if (enemy.exploding || enemy.dead) continue;
         if (distanceToSegment(enemy.x, enemy.y, effect.startX, effect.startY, effect.endX, effect.endY)
           <= enemy.radius + 10) {
-          this.#damageEnemy(enemy, 2 * deltaTime * (effect.empowered ? 1.25 : 1), enemyManager);
+          this.#damageEnemy(enemy, 2 * deltaTime * (effect.damageMultiplier ?? 1), enemyManager);
         }
       }
     }
@@ -353,19 +366,26 @@ export class AbilitySystem {
     this.#effects = this.#effects.filter((effect) => effect.age < effect.duration);
   }
 
+  #getBuffDamageMultiplier() {
+    if (this.#ultimateBuffTimer <= 0) return 1;
+    return this.#ultimateBuffTier === "green" ? 1.45 : 1.25;
+  }
+
   get weaponVisualState() {
-    return {
-      ultimateRed: (this.#ultimateCharging && this.#ultimateCharge > 5)
-        || this.#ultimateBuffTimer > 0,
-    };
+    const chargingTier = this.#ultimateCharging && this.#ultimateCharge >= ULTIMATE_MAX_CHARGE
+      ? "green"
+      : this.#ultimateCharging && this.#ultimateCharge > 5 ? "red" : null;
+    const tier = chargingTier ?? (this.#ultimateBuffTimer > 0 ? this.#ultimateBuffTier : null);
+    return { ultimateRed: tier === "red", ultimateGreen: tier === "green" };
   }
 
   get weaponModifiers() {
+    const buffActive = this.#ultimateBuffTimer > 0;
     return {
-      damage: this.#ultimateBuffTimer > 0 ? 1.25 : 1,
-      fireRate: (this.#overloadTimer > 0 ? 2 : 1) * (this.#ultimateBuffTimer > 0 ? 1.25 : 1),
+      damage: this.#getBuffDamageMultiplier(),
+      fireRate: (this.#overloadTimer > 0 ? 2 : 1) * (buffActive ? 1.25 : 1),
       paused: this.#ultimateCharging,
-      ultimateActive: this.#ultimateBuffTimer > 0,
+      ultimateTier: buffActive ? this.#ultimateBuffTier : null,
     };
   }
 
@@ -383,13 +403,15 @@ export class AbilitySystem {
       ultimateCharging: this.#ultimateCharging,
       ultimateCharge: this.#ultimateCharge,
       ultimateBuffRemaining: this.#ultimateBuffTimer,
+      ultimateBuffTier: this.#ultimateBuffTier,
     };
   }
 
   render(ctx) {
     for (const effect of this.#effects) {
       const progress = effect.age / effect.duration;
-      const empoweredColor = effect.empowered ? "#ff3158" : "#55eaff";
+      const effectColor = effect.buffTier === "green" ? "#39ff88" : effect.empowered ? "#ff3158" : "#55eaff";
+      const empoweredColor = effectColor;
       if (effect.type === "trail") {
         ctx.save();
         const alpha = Math.max(0, 1 - progress);
@@ -400,14 +422,14 @@ export class AbilitySystem {
         ctx.lineCap = "round";
         ctx.shadowBlur = 24;
         ctx.shadowColor = empoweredColor;
-        ctx.strokeStyle = effect.empowered ? "rgba(255, 49, 88, 0.24)" : "rgba(87, 231, 255, 0.22)";
+        ctx.strokeStyle = effect.buffTier === "green" ? "rgba(57, 255, 136, 0.24)" : effect.empowered ? "rgba(255, 49, 88, 0.24)" : "rgba(87, 231, 255, 0.22)";
         ctx.lineWidth = 30 * (1 - progress * 0.45);
         ctx.beginPath();
         ctx.moveTo(effect.startX, effect.startY);
         ctx.lineTo(effect.endX, effect.endY);
         ctx.stroke();
         ctx.shadowBlur = 14;
-        ctx.strokeStyle = effect.empowered ? "#ff3158" : "#6af1ff";
+        ctx.strokeStyle = effect.buffTier === "green" ? "#39ff88" : effect.empowered ? "#ff3158" : "#6af1ff";
         ctx.lineWidth = 9 * (1 - progress * 0.35);
         ctx.beginPath();
         ctx.moveTo(effect.startX, effect.startY);
@@ -429,8 +451,8 @@ export class AbilitySystem {
           ctx.save();
           ctx.translate(x, y);
           ctx.rotate(direction);
-          ctx.strokeStyle = effect.empowered ? "#ffd1da" : "#b9f8ff";
-          ctx.shadowColor = effect.empowered ? "#ff1744" : "#4be7ff";
+          ctx.strokeStyle = effect.buffTier === "green" ? "#d7ffe7" : effect.empowered ? "#ffd1da" : "#b9f8ff";
+          ctx.shadowColor = effect.buffTier === "green" ? "#19ff79" : effect.empowered ? "#ff1744" : "#4be7ff";
           ctx.shadowBlur = 18;
           ctx.lineWidth = 3;
           ctx.beginPath();
@@ -454,12 +476,14 @@ export class AbilitySystem {
         ctx.save();
         ctx.globalAlpha = Math.max(0, 1 - progress);
         const isRedLaser = effect.type === "laser" && effect.red;
+        const isGreenLaser = effect.type === "laser" && effect.green;
         const isEmpoweredShot = effect.type === "drone-shot" && effect.empowered;
-        ctx.strokeStyle = isRedLaser || isEmpoweredShot ? "#ff1744" : effect.type === "laser" ? "#8af5ff" : "#5deaff";
+        const isGreenShot = effect.type === "drone-shot" && effect.buffTier === "green";
+        ctx.strokeStyle = isGreenLaser || isGreenShot ? "#39ff88" : isRedLaser || isEmpoweredShot ? "#ff1744" : effect.type === "laser" ? "#8af5ff" : "#5deaff";
         ctx.shadowColor = ctx.strokeStyle;
         ctx.shadowBlur = effect.type === "laser"
-          ? (isRedLaser ? 48 : 34) + (effect.chargeRatio ?? 0) * 30
-          : isEmpoweredShot ? 24 : 12;
+          ? (isGreenLaser ? 58 : isRedLaser ? 48 : 34) + (effect.chargeRatio ?? 0) * 30
+          : isGreenShot ? 28 : isEmpoweredShot ? 24 : 12;
         ctx.lineCap = "round";
         const laserThickness = 10 + (effect.chargeRatio ?? 0) * 50;
         ctx.lineWidth = effect.type === "laser"
@@ -469,16 +493,16 @@ export class AbilitySystem {
         ctx.moveTo(effect.x1, effect.y1);
         ctx.lineTo(effect.x2, effect.y2);
         ctx.stroke();
-        if (isRedLaser) {
+        if (isRedLaser || isGreenLaser) {
           ctx.shadowBlur = 8;
-          ctx.strokeStyle = "#fff0f3";
+          ctx.strokeStyle = isGreenLaser ? "#e5ffef" : "#fff0f3";
           ctx.lineWidth = 4 + (effect.chargeRatio ?? 0) * 10;
           ctx.beginPath();
           ctx.moveTo(effect.x1, effect.y1);
           ctx.lineTo(effect.x2, effect.y2);
           ctx.stroke();
-          ctx.fillStyle = "#ff3158";
-          ctx.shadowColor = "#ff1744";
+          ctx.fillStyle = isGreenLaser ? "#39ff88" : "#ff3158";
+          ctx.shadowColor = isGreenLaser ? "#19ff79" : "#ff1744";
           ctx.shadowBlur = 26;
           ctx.beginPath();
           ctx.arc(effect.x2, effect.y2, 13 * (1 - progress) + 4, 0, Math.PI * 2);
@@ -489,10 +513,11 @@ export class AbilitySystem {
     }
 
     const dronesEmpowered = this.#ultimateBuffTimer > 0;
+    const dronesGreen = dronesEmpowered && this.#ultimateBuffTier === "green";
     for (const drone of this.#drones) {
-      const mainColor = dronesEmpowered ? "#ff3158" : "#63eaff";
-      const coreColor = dronesEmpowered ? "#fff0f3" : "#e5fcff";
-      const darkColor = dronesEmpowered ? "#761c32" : "#15516a";
+      const mainColor = dronesGreen ? "#39ff88" : dronesEmpowered ? "#ff3158" : "#63eaff";
+      const coreColor = dronesGreen ? "#e5ffef" : dronesEmpowered ? "#fff0f3" : "#e5fcff";
+      const darkColor = dronesGreen ? "#145b35" : dronesEmpowered ? "#761c32" : "#15516a";
       const pulse = 1 + Math.sin(drone.age * 7) * 0.08;
 
       ctx.save();
@@ -569,6 +594,7 @@ export class AbilitySystem {
     this.#riftRechargeTimer = 0;
     this.#overloadTimer = 0;
     this.#ultimateBuffTimer = 0;
+    this.#ultimateBuffTier = null;
     this.#ultimateCharging = false;
     this.#ultimateCharge = 0;
     this.#lastWave = 0;
